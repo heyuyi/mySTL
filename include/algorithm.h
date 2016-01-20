@@ -5,7 +5,8 @@
 #include <functional>
 
 namespace mySTL {
-
+// some kinds of sort algorithm
+// insertion-sort
 template<typename _TIt, 
 	typename _FPtr> inline
 	void insertSort(_TIt beg, _TIt end, _FPtr func)
@@ -26,6 +27,7 @@ template<typename _TIt> inline
 		insertSort(beg, end, std::less<>());
 	}
 
+// heap-sort
 template<typename _TIt,
 	typename _Diff,
 	typename _FPtr> inline
@@ -86,7 +88,21 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void heapSort(_TIt beg, _TIt end)
 	{
-		heapSort(beg, end, less<>());
+		heapSort(beg, end, std::less<>());
+	}
+
+// quick-sort
+template<typename _TIt,
+	typename _FPtr> inline
+	void quickSort(_TIt beg, _TIt end, _FPtr func)
+	{
+
+	}
+
+template<typename _TIt> inline
+	void quickSort(_TIt beg, _TIt end)
+	{
+		quickSort(beg, end, std::less<>());
 	}
 }
 #endif
