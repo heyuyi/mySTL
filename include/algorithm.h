@@ -41,21 +41,20 @@ template<typename _TIt,
 			_Lp[i] = *(beg + i);
 		for (j = 0; j < n2; ++j)
 			_Rp[j] = *(mid + j);
-		i = 0; j = 0;
-		for (_TIt it = beg; it < end; ++it) {
-			if (i < n1) {
-				if (j < n2) {
-					if (func(_Lp[i], _Rp[j]))
-						*it = _Lp[i++];
-					else
-						*it = _Rp[j++];
-				}
-				else
-					*it = _Lp[i++];
-			}
-			else {
+		_TIt it = beg;
+		for (i = 0, j = 0; i < n1 && j < n2; ++it) {
+			if (func(_Lp[i], _Rp[j]))
+				*it = _Lp[i++];
+			else
 				*it = _Rp[j++];
-			}
+		}
+		if (i == n1) {
+			for (; j < n2; ++it)
+				*it = _Rp[j++];
+		}
+		else {
+			for (; i < n1; ++it)
+				*it = _Lp[i++];
 		}
 		delete[]_Lp;
 		delete[]_Rp;
