@@ -27,6 +27,59 @@ template<typename _TIt> inline
 		insertSort(beg, end, std::less<>());
 	}
 
+//merge-sort
+template<typename _TIt,
+	typename _FPtr> inline
+	void _Merge(_TIt beg, _TIt mid, _TIt end, _FPtr func)
+	{
+		auto n1 = mid - beg;
+		auto n2 = end - mid;
+		decltype(n1) i, j;
+		auto *_Lp = new remove_reference<decltype(*beg)>::type[n1];
+		auto *_Rp = new remove_reference<decltype(*beg)>::type[n2];
+		for (i = 0; i < n1; ++i)
+			_Lp[i] = *(beg + i);
+		for (j = 0; j < n2; ++j)
+			_Rp[j] = *(mid + j);
+		i = 0; j = 0;
+		for (_TIt it = beg; it < end; ++it) {
+			if (i < n1) {
+				if (j < n2) {
+					if (func(_Lp[i], _Rp[j]))
+						*it = _Lp[i++];
+					else
+						*it = _Rp[j++];
+				}
+				else
+					*it = _Lp[i++];
+			}
+			else {
+				*it = _Rp[j++];
+			}
+		}
+		delete[]_Lp;
+		delete[]_Rp;
+	}
+
+template<typename _TIt,
+	typename _FPtr> inline
+	void mergeSort(_TIt beg, _TIt end, _FPtr func)
+	{
+		auto n = end - beg;
+		if (n > 1) {
+			_TIt mid = beg + (end - beg) / 2;
+			mergeSort(beg, mid, func);
+			mergeSort(mid, end, func);
+			_Merge(beg, mid, end, func);
+		}
+	}
+
+template<typename _TIt> inline
+	void mergeSort(_TIt beg, _TIt end)
+	{
+		mergeSort(beg, end, std::less<>());
+	}
+
 // heap-sort
 template<typename _TIt,
 	typename _Diff,
@@ -203,7 +256,7 @@ template<typename _TIt,
 
 template<typename _TIt,
 	typename _FPtr> inline
-	void quickSort(_TIt beg, _TIt end, _FPtr func, int n = 1)
+	void quickSort(_TIt beg, _TIt end, _FPtr func)
 	{
 		/*if(n == 0)
 			_Quick_sort_0(beg, end, func);
@@ -214,9 +267,9 @@ template<typename _TIt,
 	}
 
 template<typename _TIt> inline
-	void quickSort(_TIt beg, _TIt end, int n = 1)
+	void quickSort(_TIt beg, _TIt end)
 	{
-		quickSort(beg, end, std::less<>(), n);
+		quickSort(beg, end, std::less<>());
 	}
 }
 #endif
