@@ -16,14 +16,14 @@ int main()
 {
 	default_random_engine e(time(0));
 	uniform_int_distribution<> u;
-	vector<int> a1, a2, a3, a4, a5;
+	vector<int> a1, a2, a3, a4, a5, a6;
 //	clock_t start, end;
 
 	for (int i = 10000; i > 0; --i)
 		a1.push_back(u(e));
 //	for (int i = 10000; i > 0; --i)
 //		a1.push_back(i);
-	a2 = a1; a3 = a1; a4 = a1; a5 = a1;
+	a2 = a1; a3 = a1; a4 = a1; a5 = a1; a6 = a1;
 
 
 //	i =								10000		|	
@@ -31,7 +31,9 @@ int main()
 //	insertSort(a2.begin(), a2.end());	// 57s		|
 	heapSort(a3.begin(), a3.end());		// 767ms	|
 	quickSort(a4.begin(), a4.end());	// 96ms		|	
-	mergeSort(a5.begin(), a5.end());	// 242ms
+	mergeSort(a5.begin(), a5.end());	// 242ms	|
+	bubbleSort(a6.begin(), a6.end());	// 109s
+
 /*	cout << "data size: i = " << a1.size() << endl;
 	start = clock();
 	sort(a1.begin(), a1.end());

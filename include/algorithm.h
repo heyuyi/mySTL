@@ -27,7 +27,26 @@ template<typename _TIt> inline
 		insertSort(beg, end, std::less<>());
 	}
 
-//merge-sort
+// bubble-sort
+template<typename _TIt,
+	typename _FPtr> inline
+	void bubbleSort(_TIt beg, _TIt end, _FPtr func)
+	{
+		for (_TIt it1 = beg; it1 < end; ++it1) {
+			for (_TIt it2 = end - 1; it2 > it1; --it2) {
+				if (func(*it2, *(it2 - 1)))
+					swap(*it2, *(it2 - 1));
+			}
+		}
+	}
+
+template<typename _TIt> inline
+	void bubbleSort(_TIt beg, _TIt end)
+	{
+		bubbleSort(beg, end, std::less<>());
+	}
+
+// merge-sort
 template<typename _TIt,
 	typename _FPtr> inline
 	void _Merge(_TIt beg, _TIt mid, _TIt end, _FPtr func)
