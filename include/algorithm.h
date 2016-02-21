@@ -289,5 +289,7 @@ template<typename _TIt> inline
 	{
 		quickSort(beg, end, std::less<>());
 	}
+
+
 }
 #endif
