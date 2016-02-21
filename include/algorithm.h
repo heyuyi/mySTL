@@ -9,11 +9,10 @@ namespace mySTL {
 // insertion-sort
 template<typename _TIt, 
 	typename _FPtr> inline
-	void insertSort(_TIt beg, _TIt end, _FPtr func)
+	void insert_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		_TIt it1, it2;
-		for (it1 = beg + 1; it1 < end; ++it1)
-		{
+		for (it1 = beg + 1; it1 < end; ++it1) {
 			auto val = *it1;
 			for (it2 = it1; it2 > beg && func(val, *(it2 - 1)); --it2)
 				*it2 = *(it2-1);
@@ -22,15 +21,15 @@ template<typename _TIt,
 	}
 
 template<typename _TIt> inline
-	void insertSort(_TIt beg, _TIt end)
+	void insert_sort(_TIt beg, _TIt end)
 	{
-		insertSort(beg, end, std::less<>());
+		insert_sort(beg, end, std::less<>());
 	}
 
 // bubble-sort
 template<typename _TIt,
 	typename _FPtr> inline
-	void bubbleSort(_TIt beg, _TIt end, _FPtr func)
+	void bubble_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		for (_TIt it1 = beg; it1 < end; ++it1) {
 			for (_TIt it2 = end - 1; it2 > it1; --it2) {
@@ -41,9 +40,9 @@ template<typename _TIt,
 	}
 
 template<typename _TIt> inline
-	void bubbleSort(_TIt beg, _TIt end)
+	void bubble_sort(_TIt beg, _TIt end)
 	{
-		bubbleSort(beg, end, std::less<>());
+		bubble_sort(beg, end, std::less<>());
 	}
 
 // merge-sort
@@ -81,21 +80,21 @@ template<typename _TIt,
 
 template<typename _TIt,
 	typename _FPtr> inline
-	void mergeSort(_TIt beg, _TIt end, _FPtr func)
+	void merge_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		auto n = end - beg;
 		if (n > 1) {
 			_TIt mid = beg + (end - beg) / 2;
-			mergeSort(beg, mid, func);
-			mergeSort(mid, end, func);
+			merge_sort(beg, mid, func);
+			merge_sort(mid, end, func);
 			_Merge(beg, mid, end, func);
 		}
 	}
 
 template<typename _TIt> inline
-	void mergeSort(_TIt beg, _TIt end)
+	void merge_sort(_TIt beg, _TIt end)
 	{
-		mergeSort(beg, end, std::less<>());
+		merge_sort(beg, end, std::less<>());
 	}
 
 // heap-sort
@@ -106,20 +105,17 @@ template<typename _TIt,
 	{
 		auto val = *(beg + i);
 		_Diff child = 2 * i + 2;
-		for (; child < n; child = 2 * child + 2)
-		{
+		for (; child < n; child = 2 * child + 2) {
 			if (func(*(beg + child), *(beg + child - 1)))
 				--child;
-			if (func(val, *(beg + child)))
-			{
+			if (func(val, *(beg + child))) {
 				*(beg + i) = *(beg + child);
 				i = child;
 			}
 			else
 				break;
 		}
-		if (child == n && func(val, *(beg + child - 1)))
-		{
+		if (child == n && func(val, *(beg + child - 1))) {
 			*(beg + i) = *(beg + child - 1);
 			*(beg + child - 1) = val;
 		}
@@ -141,25 +137,24 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void _Sort_heap(_TIt beg, _Diff n, _FPtr func)
 	{
-		for (_Diff i = n - 1; i > 0; --i)
-		{
+		for (_Diff i = n - 1; i > 0; --i) {
 			swap(*beg, *(beg + i));
-			_Adjust_heap(beg, i, 0, func);
+			_Adjust_heap(beg, i, static_cast <_Diff>(0), func);
 		}
 	}
 
 template<typename _TIt,
 	typename _FPtr> inline
-	void heapSort(_TIt beg, _TIt end, _FPtr func)
+	void heap_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		_Build_heap(beg, end - beg, func);
 		_Sort_heap(beg, end - beg, func);
 	}
 
 template<typename _TIt> inline
-	void heapSort(_TIt beg, _TIt end)
+	void heap_sort(_TIt beg, _TIt end)
 	{
-		heapSort(beg, end, std::less<>());
+		heap_sort(beg, end, std::less<>());
 	}
 
 // quick-sort
@@ -274,7 +269,7 @@ template<typename _TIt,
 
 template<typename _TIt,
 	typename _FPtr> inline
-	void quickSort(_TIt beg, _TIt end, _FPtr func)
+	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		/*if(n == 0)
 			_Quick_sort_0(beg, end, func);
@@ -285,11 +280,75 @@ template<typename _TIt,
 	}
 
 template<typename _TIt> inline
-	void quickSort(_TIt beg, _TIt end)
+	void quick_sort(_TIt beg, _TIt end)
 	{
-		quickSort(beg, end, std::less<>());
+		quick_sort(beg, end, std::less<>());
 	}
 
+// P38, <<Introduction to Algorithms>>
+// T(n) = O(nlgn)
+template<typename _TIt>
+	auto find_max_subarray(_TIt beg, _TIt end)
+	{
+		auto d = end - beg;
+		if (d == 0)
+			return 0;
+		else if (d == 1)
+			return *beg;
+		else {
+			_TIt mid = beg + d / 2;
+			auto left = find_max_subarray(beg, mid);
+			auto right = find_max_subarray(mid, end);
+			auto cross = find_max_cross_subarray(beg, mid, end);
+			auto temp = left > right ? left : right;
+			return temp > cross ? temp : cross;
+		}
+	}
+
+template<typename _TIt>
+	auto find_max_cross_subarray(_TIt beg, _TIt mid, _TIt end)
+	{
+		auto left_sum = *(mid - 1);
+		auto right_sum = *mid;
+		auto sum = left_sum;
+		for (_TIt it = mid - 1; it > beg;) {
+			--it;
+			sum += *it;
+			if (sum > left_sum)
+				left_sum = sum;
+		}
+		sum = right_sum;
+		for (_TIt it = mid + 1; it < end; ++it) {
+			sum += *it;
+			if (sum > right_sum)
+				right_sum = sum;
+		}
+		return left_sum + right_sum;
+	}
+
+// My solution, T(n) = O(n)
+template<typename _TIt>
+	auto find_max_subarray_m(_TIt beg, _TIt end)
+	{
+		auto d = end - beg;
+		if (d == 0)
+			return 0;
+		else {
+			auto sum = *beg;
+			auto max = *beg;
+			for (_TIt it = beg + 1; it < end; ++it) {
+				if (sum > 0) {
+					sum += *it;					
+				}
+				else {
+					sum = *it;
+				}
+				if (sum > max)
+					max = sum;
+			}
+			return max;
+		}
+	}
 
 }
 #endif
