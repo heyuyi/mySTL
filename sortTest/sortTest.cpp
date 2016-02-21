@@ -25,6 +25,7 @@ int main()
 //		a1.push_back(i);
 	a2 = a1; a3 = a1; a4 = a1; a5 = a1; a6 = a1;
 
+
 //	i =								10000		|	
 	sort(a1.begin(), a1.end());			// 20ms		|
 //	insertSort(a2.begin(), a2.end());	// 57s		|
