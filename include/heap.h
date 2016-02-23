@@ -5,7 +5,7 @@
 #include "algorithm.h"
 
 namespace mySTL {
-// heap structure
+// heap structure, P84, <<Introduction to Algorithms>>
 template<typename _T,
 	typename _FT = less<_T>,
 	typename _Container = vector<_T>>
@@ -47,14 +47,20 @@ template<typename _T,
 			_Build_heap(container.begin(), container.end() - container.begin(), compare);
 		}
 
-		template<typename _TIt>
+		template<typename _TIt,
+			// Next line is very very ... important !!!
+			// Check if _TIt is a type of iterator or not.
+			// Without it, heap(_TIt _First, _TIt _Last) and heap(_Container&& con) will be
+			// confusing, when the parameter is a 2-size initializer_list.
+			typename = typename std::enable_if<std::_Is_iterator<_TIt>::value, void>::type>
 		heap(_TIt _First, _TIt _Last)
 			: container(_First, _Last), compare()
 		{
 			_Build_heap(container.begin(), container.end() - container.begin(), compare);
 		}
 
-		template<typename _TIt>
+		template<typename _TIt,
+			typename = typename std::enable_if<std::_Is_iterator<_TIt>::value, void>::type>
 		heap(_TIt _First, _TIt _Last, const _FT& com)
 			: container(_First, _Last), compare(com)
 		{
@@ -102,7 +108,39 @@ template<typename _T,
 			return container.empty();
 		}
 
+		const_reference top() const
+		{
+			return container.front();
+		}
 
+		void pop()
+		{
+			if (!container.empty()) {
+				swap(container.front(), container.back());
+				_Adjust_heap(container.begin(), container.end() - container.begin() - 1,
+					static_cast <decltype(container.end() - container.begin())>(0), compare);
+				container.pop_back();
+			}
+		}
+
+		void push(const value_type& _Val)
+		{
+			container.push_back(_Val);
+			_Push_heap(container.begin(), container.end() - container.begin(), compare);
+		}
+
+		void push(value_type&& _Val)
+		{
+			container.push_back(std::move(_Val));
+			_Push_heap(container.begin(), container.end() - container.begin(), compare);
+		}
+
+		template<typename... _ValsT>
+		void emplace(_ValsT&&... _Vals)
+		{
+			container.emplace_back(std::forward<_ValsT>(_Vals)...);
+			_Push_heap(container.begin(), container.end() - container.begin(), compare);
+		}
 	protected:
 		_Container container;
 		_FT compare;
