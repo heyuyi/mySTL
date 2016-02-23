@@ -12,13 +12,17 @@ using namespace mySTL;
 
 int main()
 {
-//	vector<int> a{ 1,2,3,4,5,6 };
+	vector<int> a{ 1,2,3,4,5,6 };
 //	heap<int> b(a);
 
 //	vector<int> a{ 6,5,4,3,2,1 };
 //	heap<int, greater<int>> b(a, greater<int>());
 
-	heap<int> b({ 1,2,3,4,5,6 });
+//	vector<int> a{ 1,2,3,4,5,6 };
+//	heap<int> b(a.begin(), a.end());
+
+//	heap<int> b({ 1,2,3,4,5,6 });
+	a.size();
 	return 0;
 }
 

@@ -53,8 +53,8 @@ template<typename _TIt,
 		auto n1 = mid - beg;
 		auto n2 = end - mid;
 		decltype(n1) i, j;
-		auto *_Lp = new remove_reference<decltype(*beg)>::type[n1];
-		auto *_Rp = new remove_reference<decltype(*beg)>::type[n2];
+		auto *_Lp = new std::remove_reference<decltype(*beg)>::type[n1];
+		auto *_Rp = new std::remove_reference<decltype(*beg)>::type[n2];
 		for (i = 0; i < n1; ++i)
 			_Lp[i] = *(beg + i);
 		for (j = 0; j < n2; ++j)
@@ -289,7 +289,7 @@ template<typename _TIt> inline
 // T(n) = O(nlgn)
 template<typename _TIt>
 	auto find_max_subarray(_TIt beg, _TIt end)
-//		-> typename remove_reference<decltype(*beg)>::type
+//		-> typename std::remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
@@ -310,7 +310,7 @@ template<typename _TIt>
 
 template<typename _TIt>
 	auto find_max_cross_subarray(_TIt beg, _TIt mid, _TIt end)
-//		-> typename remove_reference<decltype(*beg)>::type
+//		-> typename std::remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
@@ -335,7 +335,7 @@ template<typename _TIt>
 // My solution, T(n) = O(n)
 template<typename _TIt>
 	auto find_max_subarray_m(_TIt beg, _TIt end)
-//		-> typename remove_reference<decltype(*beg)>::type
+//		-> typename std::remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
@@ -360,4 +360,4 @@ template<typename _TIt>
 	}
 
 }
-#endif
+#endif // !_ALGORITHM_H_
