@@ -23,7 +23,7 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void insert_sort(_TIt beg, _TIt end)
 	{
-		insert_sort(beg, end, std::less<>());
+		insert_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
 // bubble-sort
@@ -42,7 +42,7 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void bubble_sort(_TIt beg, _TIt end)
 	{
-		bubble_sort(beg, end, std::less<>());
+		bubble_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
 // merge-sort
@@ -94,7 +94,7 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void merge_sort(_TIt beg, _TIt end)
 	{
-		merge_sort(beg, end, std::less<>());
+		merge_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
 // heap-sort
@@ -154,7 +154,7 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void heap_sort(_TIt beg, _TIt end)
 	{
-		heap_sort(beg, end, std::less<>());
+		heap_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
 // quick-sort
@@ -282,13 +282,15 @@ template<typename _TIt,
 template<typename _TIt> inline
 	void quick_sort(_TIt beg, _TIt end)
 	{
-		quick_sort(beg, end, std::less<>());
+		quick_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
 // P38, <<Introduction to Algorithms>>
 // T(n) = O(nlgn)
 template<typename _TIt>
 	auto find_max_subarray(_TIt beg, _TIt end)
+//		-> typename remove_reference<decltype(*beg)>::type
+		-> decltype(*beg + 0)
 	{
 		auto d = end - beg;
 		if (d == 0)
@@ -307,6 +309,8 @@ template<typename _TIt>
 
 template<typename _TIt>
 	auto find_max_cross_subarray(_TIt beg, _TIt mid, _TIt end)
+//		-> typename remove_reference<decltype(*beg)>::type
+		-> decltype(*beg + 0)
 	{
 		auto left_sum = *(mid - 1);
 		auto right_sum = *mid;
@@ -329,6 +333,8 @@ template<typename _TIt>
 // My solution, T(n) = O(n)
 template<typename _TIt>
 	auto find_max_subarray_m(_TIt beg, _TIt end)
+//		-> typename remove_reference<decltype(*beg)>::type
+		-> decltype(*beg + 0)
 	{
 		auto d = end - beg;
 		if (d == 0)
