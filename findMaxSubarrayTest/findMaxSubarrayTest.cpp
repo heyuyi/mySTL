@@ -22,6 +22,9 @@ int main()
 
 	auto x1 = find_max_subarray(a.begin(), a.end());		//147ms
 	auto x2 = find_max_subarray_m(a.begin(), a.end());	//14ms
+	
+/*	int a[] = { 1,-2,3,-4 };
+	auto x2 = find_max_subarray_m(begin(a), end(a));*/
 	return 0;
 }
 

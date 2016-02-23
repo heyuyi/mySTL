@@ -12,10 +12,10 @@ template<typename _TIt,
 	void insert_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		_TIt it1, it2;
-		for (it1 = beg + 1; it1 < end; ++it1) {
+		for (it1 = beg + 1; it1 != end; ++it1) {
 			auto val = *it1;
-			for (it2 = it1; it2 > beg && func(val, *(it2 - 1)); --it2)
-				*it2 = *(it2-1);
+			for (it2 = it1; it2 != beg && func(val, *(it2 - 1)); --it2)
+				*it2 = *(it2 - 1);
 			*it2 = val;
 		}
 	}
@@ -31,8 +31,8 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void bubble_sort(_TIt beg, _TIt end, _FPtr func)
 	{
-		for (_TIt it1 = beg; it1 < end; ++it1) {
-			for (_TIt it2 = end - 1; it2 > it1; --it2) {
+		for (_TIt it1 = beg; it1 != end; ++it1) {
+			for (_TIt it2 = end - 1; it2 != it1; --it2) {
 				if (func(*it2, *(it2 - 1)))
 					swap(*it2, *(it2 - 1));
 			}
@@ -166,7 +166,7 @@ template<typename _TIt,
 		if (s > 1) {
 			auto val = *beg;
 			_TIt i = beg + 1, j = beg;
-			for (; i < end; ++i) {
+			for (; i != end; ++i) {
 				if (func(*i, val)) {
 					++j;
 					swap(*j, *i);
@@ -190,7 +190,7 @@ template<typename _TIt,
 			for (;;) {
 				do {
 					++i;
-				} while (i < end && func(*i, val));
+				} while (i != end && func(*i, val));
 				do {
 					--j;
 				} while (/*j >= beg && */func(val, *j));
@@ -252,7 +252,7 @@ template<typename _TIt,
 			for (;;) {
 				do {
 					++i;
-				} while (i < end && func(*i, val));
+				} while (i != end && func(*i, val));
 				do {
 					--j;
 				} while (/*j >= beg && */func(val, *j));
@@ -291,6 +291,7 @@ template<typename _TIt>
 	auto find_max_subarray(_TIt beg, _TIt end)
 //		-> typename remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
+//		-> typename _TIt::value_type
 	{
 		auto d = end - beg;
 		if (d == 0)
@@ -311,18 +312,19 @@ template<typename _TIt>
 	auto find_max_cross_subarray(_TIt beg, _TIt mid, _TIt end)
 //		-> typename remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
+//		-> typename _TIt::value_type
 	{
 		auto left_sum = *(mid - 1);
 		auto right_sum = *mid;
 		auto sum = left_sum;
-		for (_TIt it = mid - 1; it > beg;) {
+		for (_TIt it = mid - 1; it != beg;) {
 			--it;
 			sum += *it;
 			if (sum > left_sum)
 				left_sum = sum;
 		}
 		sum = right_sum;
-		for (_TIt it = mid + 1; it < end; ++it) {
+		for (_TIt it = mid + 1; it != end; ++it) {
 			sum += *it;
 			if (sum > right_sum)
 				right_sum = sum;
@@ -335,6 +337,7 @@ template<typename _TIt>
 	auto find_max_subarray_m(_TIt beg, _TIt end)
 //		-> typename remove_reference<decltype(*beg)>::type
 		-> decltype(*beg + 0)
+//		-> typename _TIt::value_type
 	{
 		auto d = end - beg;
 		if (d == 0)
@@ -342,7 +345,7 @@ template<typename _TIt>
 		else {
 			auto sum = *beg;
 			auto max = *beg;
-			for (_TIt it = beg + 1; it < end; ++it) {
+			for (_TIt it = beg + 1; it != end; ++it) {
 				if (sum > 0) {
 					sum += *it;					
 				}

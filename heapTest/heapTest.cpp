@@ -3,10 +3,19 @@
 
 #include "stdafx.h"
 #include "..\include\heap.h"
+#include <vector>
+#include <functional>
+#include <queue>
+
+using namespace std;
+using namespace mySTL;
 
 int main()
 {
-
+//	vector<int> a{ 1,2,3,4,5,6 };
+//	heap<int> b(a);
+	vector<int> a{ 6,5,4,3,2,1 };
+	heap<int, greater<int>> b(a, greater<int>());
 	return 0;
 }
 
