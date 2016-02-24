@@ -179,49 +179,78 @@ template<typename _TIt,
 // quick-sort
 template<typename _TIt,
 	typename _FPtr> inline
-	void _Quick_sort_0(_TIt beg, _TIt end, _FPtr func)
+	typename _TIt _Partition_0(_TIt beg, _TIt end, _FPtr func)
 	{
-		auto s = end - beg;
-		if (s > 1) {
-			auto val = *beg;
-			_TIt i = beg + 1, j = beg;
-			for (; i != end; ++i) {
-				if (func(*i, val)) {
-					++j;
-					swap(*j, *i);
-				}
+		auto val = *beg;
+		_TIt i = beg + 1, j = beg;
+		for (; i != end; ++i) {
+			if (func(*i, val)) {
+				++j;
+				swap(*j, *i);
 			}
-			if (j != beg)
-				swap(*beg, *j);
-			_Quick_sort_0(beg, j, func);
-			_Quick_sort_0(j + 1, end, func);
 		}
+		if (j != beg)
+			swap(*beg, *j);
+		return j;
 	}
 
 template<typename _TIt,
 	typename _FPtr> inline
-	void _Quick_sort_1(_TIt beg, _TIt end, _FPtr func)
+	typename _TIt _Partition_1(_TIt beg, _TIt end, _FPtr func)
 	{
-		auto s = end - beg;
-		if (s > 1) {
-			auto val = *beg;
-			_TIt i = beg, j = end;
-			for (;;) {
-				do {
-					++i;
-				} while (i != end && func(*i, val));
-				do {
-					--j;
-				} while (/*j >= beg && */func(val, *j));
-				if (i < j)
-					swap(*i, *j);
-				else
-					break;
-			}
-			swap(*beg, *j);
-			_Quick_sort_1(beg, j, func);
-			_Quick_sort_1(j + 1, end, func);
+		auto val = *beg;
+		_TIt i = beg, j = end;
+		for (;;) {
+			do {
+				++i;
+			} while (i != end && func(*i, val));
+			do {
+				--j;
+			} while (/*j >= beg && */func(val, *j));
+			if (i < j)
+				swap(*i, *j);
+			else
+				break;
 		}
+		swap(*beg, *j);
+		return j;
+	}
+
+template<typename _TIt,
+	typename _FPtr> inline
+	typename _TIt _Partition_2(_TIt beg, _TIt end, _FPtr func)
+	{
+		auto len = end - beg;
+		if (len > 7) {
+			_TIt l = beg;
+			_TIt m = beg + len / 2;
+			_TIt n = end - 1;
+			if (len > 40) {
+				auto d = len / 8;
+				l = mid3(l, l + d, l + 2 * d, func);
+				m = mid3(m - d, m, m + d, func);
+				n = mid3(n - 2 * d, n - d, n, func);
+			}
+			_TIt it = mid3(l, m, n, func);
+			swap(*beg, *it);
+		}
+
+		auto val = *beg;
+		_TIt i = beg, j = end;
+		for (;;) {
+			do {
+				++i;
+			} while (i != end && func(*i, val));
+			do {
+				--j;
+			} while (/*j >= beg && */func(val, *j));
+			if (i < j)
+				swap(*i, *j);
+			else
+				break;
+		}
+		swap(*beg, *j);
+		return j;
 	}
 
 template<typename _TIt,
@@ -246,56 +275,33 @@ template<typename _TIt,
 		}
 	}
 
-template<typename _TIt,
-	typename _FPtr> inline
-	void _Quick_sort_2(_TIt beg, _TIt end, _FPtr func)
-	{
-		auto len = end - beg;
-		if (len > 1) {
-			if (len > 7) {
-				_TIt l = beg;
-				_TIt m = beg + len / 2;
-				_TIt n = end - 1;
-				if (len > 40) {
-					auto d = len / 8;
-					l = mid3(l, l + d, l + 2 * d, func);
-					m = mid3(m - d, m, m + d, func);
-					n = mid3(n - 2 * d, n - d, n, func);
-				}
-				_TIt it = mid3(l, m, n, func);
-				swap(*beg, *it);
-			}			
-
-			auto val = *beg;
-			_TIt i = beg, j = end;
-			for (;;) {
-				do {
-					++i;
-				} while (i != end && func(*i, val));
-				do {
-					--j;
-				} while (/*j >= beg && */func(val, *j));
-				if (i < j)
-					swap(*i, *j);
-				else
-					break;
-			}
-			swap(*beg, *j);
-			_Quick_sort_2(beg, j, func);
-			_Quick_sort_2(j + 1, end, func);
-		}
-	}
-
+#define QUICK_SORT_CHOICE	2
 template<typename _TIt,
 	typename _FPtr> inline
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
-		/*if(n == 0)
-			_Quick_sort_0(beg, end, func);
-		else if (n == 1)
-			_Quick_sort_1(beg, end, func);
-		else*/
-			_Quick_sort_2(beg, end, func);
+#if (QUICK_SORT_CHOICE < 3)
+		auto s = end - beg;
+		if (s > 1) {
+#if (QUICK_SORT_CHOICE == 0)
+			_TIt q = _Partition_0(beg, end, func);
+#elif (QUICK_SORT_CHOICE == 1)
+			_TIt q = _Partition_1(beg, end, func);
+#elif (QUICK_SORT_CHOICE == 2)
+			_TIt q = _Partition_2(beg, end, func);
+#else
+#endif
+			quick_sort(beg, q, func);
+			quick_sort(q + 1, end, func);
+		}
+#else
+		// Tail recursive quicksort
+		while ((end - beg) > 1) {
+			_TIt q = _Partition_2(beg, end, func);
+			quick_sort(beg, q, func);
+			beg = q + 1;
+		}
+#endif
 	}
 
 template<typename _TIt> inline

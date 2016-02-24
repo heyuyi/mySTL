@@ -27,11 +27,11 @@ int main()
 
 //	i =								10000		|	
 	sort(a1.begin(), a1.end());			// 20ms		|
-	insert_sort(a2.begin(), a2.end());		// 57s		|
-	heap_sort(a3.begin(), a3.end());		// 767ms		|
+//	insert_sort(a2.begin(), a2.end());		// 57s		|
+//	heap_sort(a3.begin(), a3.end());		// 767ms		|
 	quick_sort(a4.begin(), a4.end());		// 96ms		|	
-	merge_sort(a5.begin(), a5.end());		// 242ms		|
-	bubble_sort(a6.begin(), a6.end());		// 109s
+//	merge_sort(a5.begin(), a5.end());		// 242ms		|
+//	bubble_sort(a6.begin(), a6.end());		// 109s
 
  	return 0;
 }
