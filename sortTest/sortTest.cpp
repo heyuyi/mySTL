@@ -19,7 +19,7 @@ int main()
 	vector<int> a1, a2, a3, a4, a5, a6;
 //	clock_t start, end;
 
-	for (int i = 1000; i > 0; --i)
+	for (int i = 10000; i > 0; --i)
 		a1.push_back(u(e));
 //	for (int i = 10000; i > 0; --i)
 //		a1.push_back(i);

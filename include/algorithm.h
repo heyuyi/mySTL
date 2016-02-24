@@ -157,6 +157,25 @@ template<typename _TIt> inline
 		heap_sort(beg, end, std::less<decltype(*beg)>());
 	}
 
+template<typename _TIt,
+	typename _Diff,
+	typename _FPtr> inline
+	void _Push_heap(_TIt beg, _Diff n, _FPtr func)
+	{
+		_Diff i = n - 1, j;
+		auto val = *(beg + i);
+		for (; i != 0;) {
+			j = (i - 1) / 2;
+			if (func(*(beg + j), val)) {
+				*(beg + i) = *(beg + j);
+				i = j;
+			}
+			else
+				break;
+		}
+		*(beg + i) = val;
+	}
+
 // quick-sort
 template<typename _TIt,
 	typename _FPtr> inline

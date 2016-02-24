@@ -35,14 +35,19 @@ int main()
 	default_random_engine e(time(0));
 	uniform_int_distribution<> u;
 	vector<int> a;
-	for (int i = 1000; i > 0; --i)
+	for (int i = 10000; i > 0; --i)
 		a.push_back(u(e));
 
+/*	// i									10000
+	heap<int> b(a.begin(), a.end());			// 95ms
+	priority_queue<int> c(a.begin(), a.end());	// 8ms
+*/
 	heap<int> b;
 	priority_queue<int> c;
-	for (int i = 0; i < a.size(); ++i)		// 27ms
+	// i							1000	|	10000
+	for (int i = 0; i < a.size(); ++i)		// 27ms	|	133ms
 		b.push(a[i]);
-	for (int i = 0; i < a.size(); ++i)		// 54ms
+	for (int i = 0; i < a.size(); ++i)		// 54ms	|	3330ms
 		c.push(a[i]);
 
 	return 0;
