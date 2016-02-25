@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sortTest", "sortTest\sortTest.vcxproj", "{FFD609B0-02C8-4DEE-BE6E-9571A8C993DE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "findMaxSubarrayTest", "findMaxSubarrayTest\findMaxSubarrayTest.vcxproj", "{137ABC02-46D3-4379-A376-BAE817973CD0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "heapTest", "heapTest\heapTest.vcxproj", "{CA793378-C349-4A3A-835C-CCC76EC281B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "selectTest", "selectTest\selectTest.vcxproj", "{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{CA793378-C349-4A3A-835C-CCC76EC281B0}.Release|x64.Build.0 = Release|x64
 		{CA793378-C349-4A3A-835C-CCC76EC281B0}.Release|x86.ActiveCfg = Release|Win32
 		{CA793378-C349-4A3A-835C-CCC76EC281B0}.Release|x86.Build.0 = Release|Win32
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Debug|x64.ActiveCfg = Debug|x64
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Debug|x64.Build.0 = Debug|x64
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Debug|x86.ActiveCfg = Debug|Win32
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Debug|x86.Build.0 = Debug|Win32
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Release|x64.ActiveCfg = Release|x64
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Release|x64.Build.0 = Release|x64
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Release|x86.ActiveCfg = Release|Win32
+		{D20CE807-DEFA-4CC6-8500-CDF18D5320D4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

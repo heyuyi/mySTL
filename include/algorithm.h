@@ -323,33 +323,44 @@ template<typename _TIt,
 		}
 	}
 
-#define QUICK_SORT_CHOICE	4
+#define QUICK_SORT_CHOICE	2
+#define TAIL_RECURSIVE_QUICK_SORT
 template<typename _TIt,
 	typename _FPtr> inline
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
-#if (QUICK_SORT_CHOICE < 4)
+#ifndef TAIL_RECURSIVE_QUICK_SORT
 		auto s = end - beg;
 		if (s > 1) {
+#if (QUICK_SORT_CHOICE < 3)
 #if (QUICK_SORT_CHOICE == 0)
 			_TIt q = _Partition_0(beg, end, func);
 #elif (QUICK_SORT_CHOICE == 1)
 			_TIt q = _Partition_1(beg, end, func);
 #elif (QUICK_SORT_CHOICE == 2)
 			_TIt q = _Partition_2(beg, end, func);
-#elif (QUICK_SORT_CHOICE == 3)
-			_TIt q = _Partition_3(beg, end, func);
 #else
 #endif
 			quick_sort(beg, q, func);
 			quick_sort(q + 1, end, func);
+#else
+			_TIt q = _Partition_3(beg, end, func);
+			quick_sort(beg, q, func);
+			quick_sort(q, end, func);
+#endif
 		}
 #else
 		// Tail recursive quicksort
 		while ((end - beg) > 1) {
+#if (QUICK_SORT_CHOICE == 2)
+			_TIt q = _Partition_2(beg, end, func);
+			quick_sort(beg, q, func);
+			beg = q+1;
+#elif (QUICK_SORT_CHOICE == 3)
 			_TIt q = _Partition_3(beg, end, func);
 			quick_sort(beg, q, func);
-			beg = q + 1;
+			beg = q;
+#endif
 		}
 #endif
 	}
@@ -432,6 +443,35 @@ template<typename _TIt>
 			}
 			return max;
 		}
+	}
+
+// select algorithms, P119, <<Introduction to Algorithms>>
+template<typename _TIt,
+	typename _FPtr> inline
+	auto select(_TIt beg, _TIt end, int i, _FPtr func)
+//		-> typename std::remove_reference<decltype(*beg)>::type
+		->decltype(*beg)
+	{
+		if ((end - beg) > 0) {
+			if ((end - beg) == 1)
+				return *beg;
+			_TIt q = _Partition_2(beg, end, func);
+			decltype(i) k = q - beg + 1;
+			if (i == k)
+				return *q;
+			else if (i < k)
+				return select(beg, q, i, func);
+			else
+				return select(q + 1, end, i - k, func);
+		}
+	}
+
+template<typename _TIt> inline
+	auto select(_TIt beg, _TIt end, int i)
+//		-> typename std::remove_reference<decltype(*beg)>::type
+		->decltype(*beg)
+	{
+		return select(beg, end, i, std::less<decltype(*beg)>());
 	}
 
 }
