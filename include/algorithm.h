@@ -206,7 +206,7 @@ template<typename _TIt,
 			} while (i != end && func(*i, val));
 			do {
 				--j;
-			} while (/*j >= beg && */func(val, *j));
+			} while (j >= beg && func(val, *j));
 			if (i < j)
 				swap(*i, *j);
 			else
@@ -243,7 +243,7 @@ template<typename _TIt,
 			} while (i != end && func(*i, val));
 			do {
 				--j;
-			} while (/*j >= beg && */func(val, *j));
+			} while (j >= beg && func(val, *j));
 			if (i < j)
 				swap(*i, *j);
 			else
@@ -275,12 +275,60 @@ template<typename _TIt,
 		}
 	}
 
-#define QUICK_SORT_CHOICE	2
+template<typename _TIt,
+	typename _FPtr> inline
+	void _Mid3_m(_TIt _First, _TIt _Mid, _TIt _Last, _FPtr func)
+	{
+		if (func(*_Mid, *_First))
+			swap(*_First, *_Mid);
+		if (func(*_Last, *_Mid)) {
+			swap(*_Mid, *_Last);
+			if (func(*_Mid, *_First))
+				swap(*_First, *_Mid);
+		}			
+	}
+
+template<typename _TIt,
+	typename _FPtr> inline
+	typename _TIt _Partition_3(_TIt beg, _TIt end, _FPtr func)
+	{
+		auto len = end - beg;
+		_TIt _Mid = beg + len / 2;
+		_TIt _End = end - 1;
+		if (len > 7) {
+			if (len > 40) {
+				auto d = len / 8;
+				_Mid3_m(beg, beg + d, beg + 2 * d, func);
+				_Mid3_m(_Mid - d, _Mid, _Mid + d, func);
+				_Mid3_m(_End - 2 * d, _End - d, _End, func);
+				_Mid3_m(beg + d, _Mid, _End - d, func);
+			}
+			else {
+				_Mid3_m(beg, _Mid, _End, func);
+			}
+		}
+		auto pivot = *_Mid;
+		for (;;) {
+			while (func(*beg, pivot))
+				++beg;
+			--end;
+			while (func(pivot, *end))
+				--end;
+			if (beg < end) {
+				swap(*beg, *end);
+				++beg;
+			}
+			else
+				return beg;
+		}
+	}
+
+#define QUICK_SORT_CHOICE	4
 template<typename _TIt,
 	typename _FPtr> inline
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
-#if (QUICK_SORT_CHOICE < 3)
+#if (QUICK_SORT_CHOICE < 4)
 		auto s = end - beg;
 		if (s > 1) {
 #if (QUICK_SORT_CHOICE == 0)
@@ -289,6 +337,8 @@ template<typename _TIt,
 			_TIt q = _Partition_1(beg, end, func);
 #elif (QUICK_SORT_CHOICE == 2)
 			_TIt q = _Partition_2(beg, end, func);
+#elif (QUICK_SORT_CHOICE == 3)
+			_TIt q = _Partition_3(beg, end, func);
 #else
 #endif
 			quick_sort(beg, q, func);
@@ -297,7 +347,7 @@ template<typename _TIt,
 #else
 		// Tail recursive quicksort
 		while ((end - beg) > 1) {
-			_TIt q = _Partition_2(beg, end, func);
+			_TIt q = _Partition_3(beg, end, func);
 			quick_sort(beg, q, func);
 			beg = q + 1;
 		}

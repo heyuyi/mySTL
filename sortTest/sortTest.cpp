@@ -22,7 +22,7 @@ int main()
 	for (int i = 10000; i > 0; --i)
 		a1.push_back(u(e));
 //	for (int i = 10000; i > 0; --i)
-//		a1.push_back(i);
+//		a1.push_back(100);
 	a2 = a1; a3 = a1; a4 = a1; a5 = a1; a6 = a1;
 
 //	i =								10000		|	
