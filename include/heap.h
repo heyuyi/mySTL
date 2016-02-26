@@ -108,12 +108,17 @@ template<typename _T,
 			return container.empty();
 		}
 
-		const_reference top() const
+		reference top(void)
 		{
 			return container.front();
 		}
 
-		void pop()
+		const_reference top(void) const
+		{
+			return container.front();
+		}
+
+		void pop(void)
 		{
 			if (!container.empty()) {
 				swap(container.front(), container.back());

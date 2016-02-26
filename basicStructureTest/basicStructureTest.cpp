@@ -4,12 +4,33 @@
 #include "stdafx.h"
 #include "..\include\stack.h"
 #include "..\include\queue.h"
-#include <cstdio>
+#include <vector>
+#include <deque>
+#include <iostream>
+
+using namespace std;
+using namespace mySTL;
+
 int main()
 {
-	int a[5] = { 1,2,3,4,5 };
-	int *ptr = (int*)(&a);
-	printf("%d,%d", *(a + 1), *(ptr - 1));
+	stack<int> a;
+	for (int i = 0; i < 5; ++i)
+		a.push(i);
+	while (!a.empty()) {
+		cout << a.top() << endl;
+		a.pop();
+	}
+	cout << endl;
+	queue<int> b;
+	for (int i = 0; i < 5; ++i) {
+		b.push(i);
+		cout << b.head() << '\t' << b.tail() << endl;
+	}
+	cout << endl;
+	while (!b.empty()) {
+		cout << b.head() << '\t' << b.tail() << endl;
+		b.pop();
+	}
 	return 0;
 }
 
