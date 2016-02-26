@@ -41,6 +41,16 @@ template<typename _T,
 			return constainer.back();
 		}
 
+		reference bottom(void)
+		{
+			return container.front();
+		}
+
+		const_reference bottom(void) const
+		{
+			return constainer.front();
+		}
+
 		void push(const value_type& _Val)
 		{
 			container.push_back(_Val);
@@ -64,6 +74,94 @@ template<typename _T,
 
 	protected:
 		_Container container;
+	};
+
+// 两个队列实现一个栈, P131
+template<typename _T,
+	typename _Queue = queue<_T>>
+	class stack_2queue
+	{
+	public:
+		typedef typename _Queue::value_type value_type;
+		typedef typename _Queue::size_type size_type;
+		typedef typename _Queue::reference reference;
+		typedef typename _Queue::const_reference const_reference;
+
+		stack_2queue()
+			: a(), b()
+		{
+		}
+
+		size_type size(void) const
+		{
+			return a.size() + b.size();
+		}
+
+		bool empty(void) const
+		{
+			return (a.empty() && b.empty());
+		}
+
+		reference top(void)
+		{
+			return valid_queue().tail();
+		}
+
+		const_reference top(void) const
+		{
+			return valid_queue().tail();
+		}
+
+		reference bottom(void)
+		{
+			return valid_queue().head();
+		}
+
+		const_reference bottom(void) const
+		{
+			return valid_queue().head();
+		}
+
+		void push(const value_type& _Val)
+		{
+			valid_queue().push(_Val);
+		}
+
+		void push(value_type&& _Val)
+		{
+			valid_queue().push(std::move(_Val));
+		}
+
+		void pop(void)
+		{
+			_Queue& x = valid_queue();
+			_Queue& y = empty_queue();
+			while (x.size() > 1) {
+				y.push(x.head());
+				x.pop();
+			}
+			x.pop();
+		}
+
+	private:
+		_Queue& empty_queue(void)
+		{
+			if (b.empty())
+				return b;
+			else
+				return a;
+		}
+
+		_Queue& valid_queue(void)
+		{
+			if (b.empty())
+				return a;
+			else
+				return b;
+		}
+
+	protected:
+		_Queue a, b;
 	};
 }
 #endif // !_STACK_H_

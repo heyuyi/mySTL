@@ -75,5 +75,88 @@ template<typename _T,
 	protected:
 		_Container container;
 	};
+
+// 两个栈实现一个队列, P131
+template<typename _T,
+	typename _Stack = stack<_T>>
+	class queue_2stack
+	{
+	public:
+		typedef typename _Stack::value_type value_type;
+		typedef typename _Stack::size_type size_type;
+		typedef typename _Stack::reference reference;
+		typedef typename _Stack::const_reference const_reference;
+
+		queue_2stack()
+			: a(), b()
+		{
+		}
+
+		size_type size(void) const
+		{
+			return a.size() + b.size();
+		}
+
+		bool empty(void) const
+		{
+			return (a.empty() && b.empty());
+		}
+
+		reference head(void)
+		{
+			if (b.empty())
+				return a.bottom();
+			else
+				return b.top();
+		}
+
+		const_reference head(void) const
+		{
+			if (b.empty())
+				return a.bottom();
+			else
+				return b.top();
+		}
+
+		reference tail(void)
+		{
+			if (a.empty())
+				return b.bottom();
+			else
+				return a.top();
+		}
+
+		const_reference tail(void) const
+		{
+			if (a.empty())
+				return b.bottom();
+			else
+				return a.top();
+		}
+
+		void push(const value_type& _Val)
+		{
+			a.push(_Val);
+		}
+
+		void push(value_type&& _Val)
+		{
+			a.push(std::move(_Val));
+		}
+
+		void pop(void)
+		{
+			if (b.empty()) {
+				while (!a.empty()) {
+					b.push(a.top());
+					a.pop();
+				}
+			}
+			b.pop();
+		}
+
+	protected:
+		_Stack a, b;
+	};
 }
 #endif // !_QUEUE_H_
