@@ -290,7 +290,7 @@ template<typename _TIt,
 
 template<typename _TIt,
 	typename _FPtr> inline
-	typename _TIt _Partition_3(_TIt beg, _TIt end, _FPtr func)
+	auto _Partition_3(_TIt beg, _TIt end, _FPtr func)
 	{
 		auto len = end - beg;
 		_TIt _Mid = beg + len / 2;
@@ -307,28 +307,69 @@ template<typename _TIt,
 				_Mid3_m(beg, _Mid, _End, func);
 			}
 		}
-		auto pivot = *_Mid;
+
+		_TIt _Mbeg = _Mid;
+		_TIt _Mend = _Mid + 1;
+		for (; beg < _Mbeg && !func(*(_Mbeg - 1), *_Mbeg) && !func(*_Mbeg, *(_Mbeg - 1)); --_Mbeg);
+		for (; _Mend < end && !func(*_Mbeg, *_Mend) && !func(*_Mend, *_Mbeg); ++_Mend);
+		_TIt _Sfront = _Mbeg;
+		_TIt _Sback = _Mend;
+
 		for (;;) {
-			while (func(*beg, pivot))
-				++beg;
-			--end;
-			while (func(pivot, *end))
-				--end;
-			if (beg < end) {
-				swap(*beg, *end);
-				++beg;
+			for (; _Sback < end; ++_Sback) {
+				if (func(*_Mbeg, *_Sback))
+					;
+				else if (func(*_Sback, *_Mbeg))
+					break;
+				else {
+					if (_Sback != _Mend)
+						swap(*_Mend, *_Sback);
+					++_Mend;
+				}
+			}
+			for (; beg < _Sfront; --_Sfront) {
+				if (func(*(_Sfront - 1), *_Mbeg))
+					;
+				else if (func(*_Mbeg, *(_Sfront - 1)))
+					break;
+				else {
+					if (_Sfront != _Mbeg--)
+						swap(*_Mbeg, *(_Sfront - 1));
+				}
+			}
+			if (_Sfront == beg) {
+				if (_Sback == end)
+					return pair<_TIt, _TIt>(_Mbeg, _Mend);
+				else {
+					if (_Mend != _Sback)
+						swap(*_Mend, *_Sback);
+					swap(*(_Mbeg++), *(_Mend++));
+					++_Sback;						
+				}
+			}
+			else if (_Sback == end) {
+				if (_Mbeg != _Sfront)
+					swap(*(_Mbeg - 1), *(_Sfront - 1));
+				swap(*(--_Mbeg), *(--_Mend));
+				--_Sfront;
 			}
 			else
-				return beg;
+				swap(*(--_Sfront), *(_Sback++));
 		}
 	}
 
-#define QUICK_SORT_CHOICE	2
+#define QUICK_SORT_CHOICE	3
 #define TAIL_RECURSIVE_QUICK_SORT
+#define QUICK_SORT_TEST
 template<typename _TIt,
 	typename _FPtr> inline
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
+		// 效率对比		|	常数数组	|	已排序数组	|	随机数组
+		// STL sort		|	2ms			|	12ms		|	20ms
+		// _Partition_2	|	106ms		|	115ms		|	106ms
+		// _Partition_3	|	18ms		|	202ms		|	303ms
+#ifdef QUICK_SORT_TEST
 #ifndef TAIL_RECURSIVE_QUICK_SORT
 		auto s = end - beg;
 		if (s > 1) {
@@ -344,9 +385,9 @@ template<typename _TIt,
 			quick_sort(beg, q, func);
 			quick_sort(q + 1, end, func);
 #else
-			_TIt q = _Partition_3(beg, end, func);
-			quick_sort(beg, q, func);
-			quick_sort(q, end, func);
+//			_TIt q = _Partition_3(beg, end, func);
+//			quick_sort(beg, q, func);
+//			quick_sort(q, end, func);
 #endif
 		}
 #else
@@ -357,10 +398,32 @@ template<typename _TIt,
 			quick_sort(beg, q, func);
 			beg = q+1;
 #elif (QUICK_SORT_CHOICE == 3)
-			_TIt q = _Partition_3(beg, end, func);
-			quick_sort(beg, q, func);
-			beg = q;
+			pair<_TIt, _TIt> _Mid = _Partition_3(beg, end, func);
+			if ((_Mid.first - beg) < (end - _Mid.second)) {
+				quick_sort(beg, _Mid.first, func);
+				beg = _Mid.second;
+			}
+			else {
+				quick_sort(_Mid.second, end, func);
+				end = _Mid.first;
+			}
 #endif
+		}
+#endif
+#else
+		while ((end - beg) > 7) {
+			pair<_TIt, _TIt> _Mid = _Partition_3(beg, end, func);
+			if ((_Mid.first - beg) < (end - _Mid.second)) {
+				quick_sort(beg, _Mid.first, func);
+				beg = _Mid.second;
+			}
+			else {
+				quick_sort(_Mid.second, end, func);
+				end = _Mid.first;
+			}
+		}
+		if ((end - beg) <= 7) {
+			insert_sort(beg, end, func);
 		}
 #endif
 	}
