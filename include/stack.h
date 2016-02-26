@@ -124,12 +124,12 @@ template<typename _T,
 
 		void push(const value_type& _Val)
 		{
-			valid_queue().push(_Val);
+			valid_queue().enqueue(_Val);
 		}
 
 		void push(value_type&& _Val)
 		{
-			valid_queue().push(std::move(_Val));
+			valid_queue().enqueue(std::move(_Val));
 		}
 
 		void pop(void)
@@ -137,10 +137,10 @@ template<typename _T,
 			_Queue& x = valid_queue();
 			_Queue& y = empty_queue();
 			while (x.size() > 1) {
-				y.push(x.head());
-				x.pop();
+				y.enqueue(x.head());
+				x.dequeue();
 			}
-			x.pop();
+			x.dequeue();
 		}
 
 	private:

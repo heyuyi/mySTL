@@ -51,17 +51,17 @@ template<typename _T,
 			return container.back();
 		}
 
-		void push(const value_type& _Val)
+		void enqueue(const value_type& _Val)
 		{
 			container.push_back(_Val);
 		}
 
-		void push(value_type&& _Val)
+		void enqueue(value_type&& _Val)
 		{
 			container.push_back(std::move(_Val));
 		}
 
-		void pop(void)
+		void dequeue(void)
 		{
 			container.pop_front();
 		}
@@ -134,17 +134,17 @@ template<typename _T,
 				return a.top();
 		}
 
-		void push(const value_type& _Val)
+		void enqueue(const value_type& _Val)
 		{
 			a.push(_Val);
 		}
 
-		void push(value_type&& _Val)
+		void enqueue(value_type&& _Val)
 		{
 			a.push(std::move(_Val));
 		}
 
-		void pop(void)
+		void dequeue(void)
 		{
 			if (b.empty()) {
 				while (!a.empty()) {

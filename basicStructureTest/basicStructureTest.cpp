@@ -23,13 +23,13 @@ int main()
 	cout << endl;
 	queue<int> b;
 	for (int i = 0; i < 5; ++i) {
-		b.push(i);
+		b.enqueue(i);
 		cout << b.head() << '\t' << b.tail() << endl;
 	}
 	cout << endl;
 	while (!b.empty()) {
 		cout << b.head() << '\t' << b.tail() << endl;
-		b.pop();
+		b.dequeue();
 	}*/
 
 	stack_2queue<int> a;
@@ -46,11 +46,11 @@ int main()
 	queue_2stack<int> b;
 	j = 0;
 	for (i = 0; i < 5; ++i) {
-		b.push(j++);
+		b.enqueue(j++);
 		cout << b.head() << '\t' << b.tail() << endl;
-		b.push(j++);
+		b.enqueue(j++);
 		cout << b.head() << '\t' << b.tail() << endl;
-		b.pop();
+		b.dequeue();
 		cout << b.head() << '\t' << b.tail() << endl;
 	}
 	return 0;
