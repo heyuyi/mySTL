@@ -365,7 +365,7 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
-		// 效率对比		|	常数数组	|	已排序数组	|	随机数组
+		// test result		|	const array	|	sorted array	|	random array
 		// STL sort		|	2ms			|	12ms		|	20ms
 		// _Partition_2	|	106ms		|	115ms		|	106ms
 		// _Partition_3	|	18ms		|	202ms		|	303ms

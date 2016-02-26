@@ -76,7 +76,7 @@ template<typename _T,
 		_Container container;
 	};
 
-// 两个队列实现一个栈, P131
+// Achieve a stack using two queues, P131, <<Introduction to Algorithms>>
 template<typename _T,
 	typename _Queue = queue<_T>>
 	class stack_2queue
