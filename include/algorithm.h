@@ -367,8 +367,8 @@ template<typename _TIt,
 	{
 		// test result		|	const array	|	sorted array	|	random array
 		// STL sort		|	2ms			|	12ms		|	20ms
-		// _Partition_2	|	106ms		|	115ms		|	106ms
-		// _Partition_3	|	18ms		|	202ms		|	303ms
+		// _Partition_2		|	106ms		|	115ms		|	106ms
+		// _Partition_3		|	18ms		|	202ms		|	303ms
 #ifdef QUICK_SORT_TEST
 #ifndef TAIL_RECURSIVE_QUICK_SORT
 		auto s = end - beg;
