@@ -366,7 +366,7 @@ template<typename _TIt,
 	void quick_sort(_TIt beg, _TIt end, _FPtr func)
 	{
 		// test result		|	const array	|	sorted array	|	random array
-		// STL sort		|	2 ms			|	12 ms		|	20 ms
+		// STL sort		|	2  ms		|	12 ms		|	20 ms
 		// _Partition_2		|	106 ms		|	115 ms		|	106 ms
 		// _Partition_3		|	18 ms		|	202 ms		|	303 ms
 #ifdef QUICK_SORT_TEST
