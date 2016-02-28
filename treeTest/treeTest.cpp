@@ -3,15 +3,14 @@
 
 #include "stdafx.h"
 #include "..\include\tree.h"
-
-using namespace std;
+#include <algorithm>
+//using namespace std;
 using namespace mySTL;
 
 int main()
 {
-	binary_search_tree<int> a;
-	tree_base<int>::node_ptr x = new tree_base<int>::node_type;
-	a.search(x);
+	binary_search_tree<int> a(5);
+	std::shared_ptr<int> p;
 	return 0;
 }
 

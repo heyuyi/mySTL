@@ -7,16 +7,16 @@
 #include <ctime>
 #include <random>
 
-using namespace std;
+//using namespace std;
 using namespace mySTL;
 
 int main()
 {
-	default_random_engine e(time(0));
-	uniform_int_distribution<> u(-1000, 1000);
+	std::default_random_engine e(time(0));
+	std::uniform_int_distribution<> u(-1000, 1000);
 //	vector<int> a{ 13,-3,-25,20,-3,-16,-23,18,20,-7,12,-5,-22,15,-4,7 };
 //	vector<int> a{ 1,-2,3,-4 };
-	vector<int> a;
+	std::vector<int> a;
 	for (int i = 10000; i > 0; --i)
 		a.push_back(u(e));
 

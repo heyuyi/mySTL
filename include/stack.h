@@ -5,7 +5,7 @@
 namespace mySTL {
 // stack structure, P129, <<Introduction to Algorithms>>
 template<typename _T,
-	typename _Container = vector<_T>>
+	typename _Container = std::vector<_T>>
 	class stack
 	{
 	public:

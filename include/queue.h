@@ -5,7 +5,7 @@
 namespace mySTL {
 // queue structure, P129, <<Introduction to Algorithms>>
 template<typename _T,
-	typename _Container = deque<_T>>
+	typename _Container = std::deque<_T>>
 	class queue
 	{
 	public:

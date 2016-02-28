@@ -8,7 +8,9 @@
 #include <deque>
 #include <iostream>
 
-using namespace std;
+//using namespace std;
+using std::cout;
+using std::endl;
 using namespace mySTL;
 
 int main()

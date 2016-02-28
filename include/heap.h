@@ -7,8 +7,8 @@
 namespace mySTL {
 // heap structure, P84, <<Introduction to Algorithms>>
 template<typename _T,
-	typename _FT = less<_T>,
-	typename _Container = vector<_T>>
+	typename _FT = std::less<_T>,
+	typename _Container = std::vector<_T>>
 	class heap
 	{
 	public:

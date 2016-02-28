@@ -2,19 +2,25 @@
 #ifndef _TREE_H_
 #define _TREE_H_
 
+#include <memory>
+
 namespace mySTL {
 template<typename _T>
-	class tree_base
+	class tree_node
 	{
 	public:
 		typedef typename _T value_type;
-		typedef value_type& value_ref;
-		typedef tree_base<_T> node_type;
+		typedef tree_node<_T> node_type;
 		typedef node_type* node_ptr;
 		typedef node_ptr& node_ptref;
 
-		tree_base()
-			: _Value(nullptr), _Parent(nullptr), _Left(nullptr), _Right(nullptr)
+		tree_node()
+			: _Value()
+		{
+		}
+
+		tree_node(const value_type& _Val)
+			: _Value(_Val)
 		{
 		}
 
@@ -23,7 +29,7 @@ template<typename _T>
 //			return *(this->value);
 //		}
 
-		node_ptref parent(void)
+/*		node_ptref parent(void)
 		{
 			return this->_Parent;
 		}
@@ -36,38 +42,33 @@ template<typename _T>
 		node_ptref right(void)
 		{
 			return this->_Right;
-		}
+		}*/
 	private:
-		value_type* _Value;
-		node_ptr _Parent;
-		node_ptr _Left;
-		node_ptr _Right;
+		std::shared_ptr<node_type> _Left;
+		std::shared_ptr<node_type> _Right;
+		std::weak_ptr<node_type> _Parent;
+		value_type _Value;
 	};
 
 // binary search tree structure, P161, <<Introduction to Algorithms>>
-template<typename _T,
-	typename _Tree_base = tree_base<_T>>
+template<typename _T>
 	class binary_search_tree
 	{
 	public:
-		typedef typename _Tree_base::value_type value_type;
-		typedef typename _Tree_base::node_type node_type;
-		typedef typename _Tree_base::node_ptr node_ptr;
-		typedef typename _Tree_base::node_ptref node_ptref;
+//		typedef typename _Tree_node::value_type value_type;
+//		typedef typename _Tree_node::node_type node_type;
+//		typedef typename _Tree_node::node_ptr node_ptr;
+//		typedef typename _Tree_node::node_ptref node_ptref;
 
-		binary_search_tree()
-			: root(nullptr)
+		binary_search_tree(const _T& _Val)
+			: root(std::make_shared<tree_node<_T>>(_Val))
 		{
+//			root = std::make_shared<tree_node<_T>>(5);
 		}
 
-		node_ptr search(node_ptr x)
-		{
-			root = new node_type;
-			root->parent() = nullptr;
-			return nullptr;
-		}
+
 	private:
-		node_ptr root;
+		std::shared_ptr<tree_node<_T>> root;
 	};
 }
 #endif // !_TREE_H_
