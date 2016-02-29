@@ -210,6 +210,11 @@ template<typename _T>
 			}
 		}
 
+		void preorder_walk(walk_func f)
+		{
+			preorder_walk(this->root(), f);
+		}
+
 		static void inorder_walk(std::shared_ptr<node_type> x, walk_func f)
 		{
 			if (x) {
@@ -219,6 +224,11 @@ template<typename _T>
 			}
 		}
 
+		void inorder_walk(walk_func f)
+		{
+			inorder_walk(this->root(), f);
+		}
+
 		static void postorder_walk(std::shared_ptr<node_type> x, walk_func f)
 		{
 			if (x) {
@@ -226,6 +236,43 @@ template<typename _T>
 				postorder_walk(x->right(), f);
 				f(x->value());
 			}
+		}
+
+		void postorder_walk(walk_func f)
+		{
+			postorder_walk(this->root(), f);
+		}
+
+		static std::shared_ptr<node_type> search(std::shared_ptr<node_type> x, const value_type& _Val)
+		{
+			if (!x || x->value() == _Val)
+				return x;
+			else if (x->value < _Val)
+				return search(x->left(), _Val);
+			else
+				return search(x->right(), _Val);
+		}
+
+		std::shared_ptr<node_type> search(const value_type& _Val)
+		{
+			return search(this->root(), _Val);
+		}
+
+		std::shared_ptr<node_type> search_i(const value_type& _Val)
+		{
+			std::shared_ptr<node_type> x(this->root());
+			while (x && x->value() != _Val) {
+				if (x->value() < _Val)
+					x = x->left();
+				else
+					x = x->right();
+			}
+			return x;
+		}
+
+		iterator begin(void)
+		{
+			return iterator(_Head->left());
 		}
 
 		std::shared_ptr<node_type>& root(void)
@@ -238,7 +285,7 @@ template<typename _T>
 			return _Size;
 		}
 	private:
-		std::shared_ptr<node_type> _Root;
+		std::shared_ptr<node_type> _Head;
 		size_type _Size;
 	};
 }
