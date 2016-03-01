@@ -93,7 +93,7 @@ template<typename _Node>
 		{
 		}
 
-		bs_tree_iterator(const std::weak_ptr<node_type>& node)
+		bs_tree_iterator(const std::shared_ptr<node_type>& node)
 			: _Node(node)
 		{
 		}
@@ -186,15 +186,15 @@ template<typename _Node>
 	};
 
 template<typename _Node>
-	bool operator==(const bs_tree_iterator<_Node>& it1,
-		const bs_tree_iterator<_Tree>& it2)
+	bool operator==(bs_tree_iterator<_Node>& it1,
+		bs_tree_iterator<_Node>& it2)
 	{
-		return it1.get_ptr() == it2.get_ptr();
+		return it1.get_ptr().lock() == it2.get_ptr().lock();
 	}
 
 template<typename _Node>
-	bool operator!=(const bs_tree_iterator<_Node>& it1,
-		const bs_tree_iterator<_Node>& it2)
+	bool operator!=(bs_tree_iterator<_Node>& it1,
+		bs_tree_iterator<_Node>& it2)
 	{
 		return !(it1 == it2);
 	}
@@ -226,6 +226,22 @@ template<typename _T>
 		{
 			_Head->left() = std::make_shared<node_type>(std::move(_Val), _Head);
 			_Head->right() = _Head->left();
+		}
+
+		template<typename _TIt,
+			typename = typename std::enable_if<std::_Is_iterator<_TIt>::value, void>::type>
+		bs_tree(_TIt beg, _TIt end)
+			: _Head(std::make_shared<node_type>(0)), _Size(0)
+		{
+			for (; beg != end; ++beg)
+				insert(*beg);
+		}
+
+		bs_tree(std::initializer_list<value_type> list)
+			: _Head(std::make_shared<node_type>(0)), _Size(0)
+		{
+			for (auto it = list.begin(); it != list.end(); ++it)
+				insert(*it);
 		}
 
 		typedef void(*walk_func)(const value_type&);
@@ -272,22 +288,22 @@ template<typename _T>
 			postorder_walk(this->root(), f);
 		}
 
-		static std::shared_ptr<node_type> search(std::shared_ptr<node_type> x, const value_type& _Val)
+		iterator search(std::shared_ptr<node_type> x, const value_type& _Val)
 		{
 			if (!x || x->value() == _Val)
-				return x;
+				return iterator(x);
 			else if (x->value < _Val)
 				return search(x->left(), _Val);
 			else
 				return search(x->right(), _Val);
 		}
 
-		std::shared_ptr<node_type> search(const value_type& _Val)
+		iterator search(const value_type& _Val)
 		{
 			return search(this->root(), _Val);
 		}
 
-		std::shared_ptr<node_type> search_i(const value_type& _Val)
+		iterator search_i(const value_type& _Val)
 		{
 			std::shared_ptr<node_type> x(this->root());
 			while (x && x->value() != _Val) {
@@ -296,25 +312,25 @@ template<typename _T>
 				else
 					x = x->right();
 			}
-			return x;
+			return iterator(x);
 		}
 
 		iterator insert(const value_type& _Val)
 		{
-			std::shared_ptr<value_type> x(std::make_shared<value_type>(_Val));
+			auto x(std::make_shared<node_type>(_Val));
 			return insert(x);
 		}
 
 		iterator insert(value_type&& _Val)
 		{
-			std::shared_ptr<value_type> x(std::make_shared<value_type>(std::move(_Val)));
+			auto x(std::make_shared<node_type>(std::move(_Val)));
 			return insert(x);
 		}
 
-		iterator insert(std::shared_ptr<value_type>& _New)
+		iterator insert(std::shared_ptr<node_type>& _New)
 		{
-			std::shared_ptr<value_type> x(this->root());
-			std::shared_ptr<value_type> y(nullptr);
+			std::shared_ptr<node_type> x(this->root());
+			std::shared_ptr<node_type> y(nullptr);
 			while (x) {
 				y = x;
 				if (_New->value() < x->value())
@@ -342,19 +358,63 @@ template<typename _T>
 			return iterator(_New);
 		}
 
-		iterator erase(iterator _It)
+		iterator erase(iterator It)
 		{
-
+			if (It == this->end())
+				return It;
+			else {
+				std::shared_ptr<node_type> x = It.get_ptr().lock();
+				iterator ret(x);
+				++ret;
+				if (!(x->left())) {
+					transplant(x, x->right());
+					if (It == this->begin())
+						this->head()->right() = ret.get_ptr().lock();
+				}
+				else if (!(x->right()))
+					transplant(x, x->left());
+				else {
+					std::shared_ptr<node_type> y = ret.get_ptr().lock();
+					if (y != x->right()) {
+						transplant(y, y->right());
+						y->right() = x->right();
+						y->right()->parent() = y;
+					}
+					transplant(x, y);
+					y->left() = x->left();
+					y->left()->parent() = y;
+				}
+				--_Size;
+				return ret;
+			}
 		}
 
-		iterator erase(iterator beg, iterator end)
+		iterator erase(iterator first, iterator last)
 		{
-
+			if (first == begin() && last == end())
+			{
+				clear();
+				return iterator(end());
+			}
+			else {
+				iterator it = first;
+				while (it != last)
+					it = erase(it);
+				return iterator(last);
+			}
 		}
 
-		void transplant(std::shared_ptr<value_type>& u, std::shared_ptr<value_type>& v)
+		void transplant(std::shared_ptr<node_type>& u, std::shared_ptr<node_type>& v)
 		{
-
+			std::shared_ptr<node_type> p = u->parent().lock();
+			if(v)
+				v->parent() = p;
+			if (u == p->left()) {
+				p->left() = v;
+			}
+			else {
+				p->right() = v;
+			}
 		}
 
 		void clear(void)
@@ -392,8 +452,5 @@ template<typename _T>
 		std::shared_ptr<node_type> _Head;
 		size_type _Size;
 	};
-
-
-
 }
 #endif // !_TREE_H_
