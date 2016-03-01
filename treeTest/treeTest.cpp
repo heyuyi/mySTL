@@ -28,11 +28,14 @@ int main()
 		x.push_back(u(e));
 	bs_tree<int> a(x.begin(), x.end());
 	a.inorder_walk(f1);
-	auto it = a.end();
+/*	auto it = a.end();
 	--it;
-	a.erase(a.begin(), it);
-//	std::shared_ptr<bs_tree_node<int>> a(std::make_shared<bs_tree_node<int>>(6));
-//	auto b = a->value();
+	--it;
+	a.erase(a.begin(), it);*/
+	auto it = a.begin();
+	++it;
+	++it;
+	a.erase(it, a.end());
 	return 0;
 }
 

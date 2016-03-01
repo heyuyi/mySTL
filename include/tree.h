@@ -171,7 +171,7 @@ template<typename _Node>
 					x = y;
 					y = y->parent().lock();
 				}
-				if(!y)
+				if(y)
 					_Node = y;
 			}
 		}
