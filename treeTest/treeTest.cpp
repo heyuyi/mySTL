@@ -15,11 +15,11 @@ void f1(const int& x)
 
 int main()
 {
-//	bs_tree<int> a(10);
-//	a.inorder_walk(f1);
-//	auto x = a.begin();
+	bs_tree<int> a(10);
+	a.inorder_walk(f1);
+	auto x = a.begin();
 	std::vector<int> b;
-	auto x = b.begin();
+	auto x = b.erase;
 	return 0;
 }
 
