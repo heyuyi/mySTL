@@ -452,5 +452,28 @@ template<typename _T>
 		std::shared_ptr<node_type> _Head;
 		size_type _Size;
 	};
+
+template<typename _T>
+	class rb_tree_node : public bs_tree_node<_T>
+	{
+	public:
+		typedef rb_tree_node<_T> node_type;
+		enum node_color {
+			red,
+			black
+		};
+
+		rb_tree_node()
+			: bs_tree_node(), _Color(black)
+		{
+		}
+
+		node_color& color()
+		{
+			return this->_Color;
+		}
+	private:
+		node_color _Color;
+	};
 }
 #endif // !_TREE_H_

@@ -28,10 +28,10 @@ int main()
 		x.push_back(u(e));
 	bs_tree<int> a(x.begin(), x.end());
 	a.inorder_walk(f1);
-/*	auto it = a.end();
-	--it;
-	--it;
-	a.erase(a.begin(), it);*/
+//	auto it = a.end();
+//	--it;
+//	--it;
+//	a.erase(a.begin(), it);
 	auto it = a.begin();
 	++it;
 	++it;
