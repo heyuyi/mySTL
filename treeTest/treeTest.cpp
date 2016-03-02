@@ -37,7 +37,7 @@ int main()
 	++it;
 	a.erase(it, a.end());
 
-	rb_tree<int> r(10);
+	rb_tree<int> r;
 	return 0;
 }
 

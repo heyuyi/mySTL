@@ -503,6 +503,11 @@ template<typename _T>
 			return (p == _Nil);
 		}
 
+		static std::shared_ptr<node_type> nil(void)
+		{
+			return _Nil;
+		}
+
 		value_type& value(void)
 		{
 			return this->_Value;
@@ -575,12 +580,17 @@ template<typename _T>
 		typedef size_t  size_type;
 
 		rb_tree()
-			: _Root(nullptr), _Size(0)
+			: _Root(node_type::nil()), _Size(0)
 		{
 		}
 
 		rb_tree(const value_type& _Val)
 			: _Root(std::make_shared<node_type>(_Val)), _Size(1)
+		{
+		}
+
+		rb_tree(value_type&& _Val)
+			: _Root(std::make_shared<node_type>(std::move(_Val))), _Size(1)
 		{
 		}
 
@@ -598,13 +608,40 @@ template<typename _T>
 
 		iterator insert(std::shared_ptr<node_type>& _New)
 		{
+			std::shared_ptr<node_type> x(this->root());
+			std::shared_ptr<node_type> y(node_type::nil());
+			while (!node_type::Is_nil(x)) {
+				y = x;
+				if (_New->value() < x->value())
+					x = x->left();
+				else
+					x = x->right();
+			}
+			_New->parent() = y;
+			if (node_type::Is_nil(y))
+				_Root = _New;
+			else if (_New->value() < y->value())
+				y->left() = _New;
+			else
+				y->right() = _New;
+			insert_fixup(_New);
 			++_Size;
 			return iterator(_New);
 		}
 
-		std::shared_ptr<node_type>& root(void)
+		void insert_fixup(std::shared_ptr<node_type> z)
 		{
-			return this->_Root;
+			for (std::shared_ptr<node_type> p = z->parent().lock();
+				p->color() == red; 
+				p = z->parent.lock()) {
+				std::shared_ptr<node_type> pp = p->parent.lock();
+				if (p == pp->left()) {
+
+				}
+				else {
+
+				}
+			}
 		}
 
 		void left_rotate(std::shared_ptr<node_type>& x)
@@ -641,6 +678,16 @@ template<typename _T>
 			else
 				p->right() = y;
 			x->parent = y;
+		}
+
+		std::shared_ptr<node_type>& root(void)
+		{
+			return this->_Root;
+		}
+
+		size_type size(void) const
+		{
+			return _Size;
 		}
 	private:
 		std::shared_ptr<node_type> _Root;
