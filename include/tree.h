@@ -72,6 +72,45 @@ template<typename _T>
 			return x;
 		}
 
+		static std::weak_ptr<node_type> successor(std::shared_ptr<node_type> x)
+		{
+			if (!x)
+				return x;
+			else if (x->right()) {
+				if (x->parent().lock())
+					return minimum(x->right());
+				else
+					return x;
+			}
+			else {
+				std::shared_ptr<node_type> y = x->parent().lock();
+				while (y && y->left() != x) {
+					x = y;
+					y = y->parent().lock();
+				}
+				return y;
+			}
+		}
+
+		static std::weak_ptr<node_type> predecessor(std::shared_ptr<node_type> x)
+		{
+			if (!x)
+				return x;
+			else if (x->left())
+				return maximum(x->left());
+			else {
+				std::weak_ptr<node_type> tmp = x;
+				std::shared_ptr<node_type> y = x->parent().lock();
+				while (y && y->left() == x) {
+					x = y;
+					y = y->parent().lock();
+				}
+				if (y)
+					return y;
+				else
+					return tmp;
+			}
+		}
 	private:
 		value_type _Value;
 		std::weak_ptr<node_type> _Parent;
@@ -79,26 +118,27 @@ template<typename _T>
 		std::shared_ptr<node_type> _Right;
 	};
 
-// binary search tree iterator
+// tree iterator
+// It can be useful to both binary search tree and red black tree
 template<typename _Node>
-	class bs_tree_iterator
+	class tree_iterator
 	{
 	public:
 		typedef typename _Node::value_type value_type;
 		typedef typename _Node::node_type node_type;
-		typedef typename bs_tree_iterator<_Node>  iterator;
+		typedef typename tree_iterator<_Node>  iterator;
 
-		bs_tree_iterator()
+		tree_iterator()
 			: _Node(nullptr)
 		{
 		}
 
-		bs_tree_iterator(const std::shared_ptr<node_type>& node)
+		tree_iterator(const std::shared_ptr<node_type>& node)
 			: _Node(node)
 		{
 		}
 
-		bs_tree_iterator(const iterator& it)
+		tree_iterator(const iterator& it)
 			: _Node(it._Node)
 		{
 		}
@@ -115,86 +155,48 @@ template<typename _Node>
 
 		iterator& operator++()
 		{
-			successor();
+			_Node = node_type::successor(_Node.lock());
 			return *this;
 		}
 
 		iterator& operator--()
 		{
-			predecessor();
+			_Node = node_type::predecessor(_Node.lock());
 			return *this;
 		}
 
 		iterator operator++(int)
 		{
 			iterator it = *this;
-			successor();
+			++*this;
 			return it;
 		}
 
 		iterator operator--(int)
 		{
 			iterator it = *this;
-			predecessor();
+			--*this;
 			return it;
-		}
-
-		void successor(void)
-		{
-			std::shared_ptr<node_type> x = _Node.lock();
-			if (!x)
-				;
-			else if (x->right()) {
-				if (x->parent().lock())
-					_Node = node_type::minimum(x->right());
-			}
-			else {
-				std::shared_ptr<node_type> y = x->parent().lock();
-				while (y && y->right() == x) {
-					x = y;
-					y = y->parent().lock();
-				}
-				_Node = y;
-			}
-		}
-
-		void predecessor(void)
-		{
-			std::shared_ptr<node_type> x = _Node.lock();
-			if (!x)
-				;
-			else if (x->left())
-				_Node = node_type::maximum(x->left());
-			else {
-				std::shared_ptr<node_type> y = x->parent().lock();
-				while (y && y->left() == x) {
-					x = y;
-					y = y->parent().lock();
-				}
-				if(y)
-					_Node = y;
-			}
 		}
 
 		std::weak_ptr<node_type>& get_ptr(void)
 		{
 			return this->_Node;
 		}
-
 	private:
 		std::weak_ptr<node_type> _Node;
 	};
 
 template<typename _Node>
-	bool operator==(bs_tree_iterator<_Node>& it1,
-		bs_tree_iterator<_Node>& it2)
+	bool operator==(tree_iterator<_Node>& it1,
+		tree_iterator<_Node>& it2)
 	{
 		return it1.get_ptr().lock() == it2.get_ptr().lock();
 	}
 
 template<typename _Node>
-	bool operator!=(bs_tree_iterator<_Node>& it1,
-		bs_tree_iterator<_Node>& it2)
+	bool operator!=(tree_iterator<_Node>& it1,
+		tree_iterator<_Node>& it2)
 	{
 		return !(it1 == it2);
 	}
@@ -204,9 +206,9 @@ template<typename _T>
 	class bs_tree
 	{
 	public:
-		typedef typename bs_tree_iterator<bs_tree_node<_T>>::value_type value_type;
-		typedef typename bs_tree_iterator<bs_tree_node<_T>>::node_type node_type;
-		typedef typename bs_tree_iterator<bs_tree_node<_T>>::iterator  iterator;
+		typedef typename tree_iterator<bs_tree_node<_T>>::value_type value_type;
+		typedef typename tree_iterator<bs_tree_node<_T>>::node_type node_type;
+		typedef typename tree_iterator<bs_tree_node<_T>>::iterator  iterator;
 		typedef size_t  size_type;
 
 		bs_tree()
@@ -453,27 +455,127 @@ template<typename _T>
 		size_type _Size;
 	};
 
+// red black tree node
 template<typename _T>
-	class rb_tree_node : public bs_tree_node<_T>
+	class rb_tree_node
 	{
 	public:
-		typedef rb_tree_node<_T> node_type;
+		typedef typename _T value_type;
+		typedef typename rb_tree_node<_T> node_type;
+
 		enum node_color {
 			red,
 			black
 		};
 
 		rb_tree_node()
-			: bs_tree_node(), _Color(black)
+			: _Value(), _Left(nullptr), _Right(nullptr), _Color(red)
 		{
+		}
+
+		rb_tree_node(const value_type& _Val)
+			: _Value(_Val), _Left(nullptr), _Right(nullptr), _Color(red)
+		{
+		}
+
+		rb_tree_node(value_type&& _Val)
+			: _Value(std::move(_Val)), _Left(nullptr), _Right(nullptr), _Color(red)
+		{
+		}
+
+		rb_tree_node(const node_color& _C)
+			: _Value(), _Left(nullptr), _Right(nullptr), _Color(_C)
+		{
+		}
+
+		rb_tree_node(const value_type& _Val, const std::shared_ptr<node_type> _P)
+			: _Value(_Val), _Parent(_P), _Left(nullptr), _Right(nullptr), _Color(red)
+		{
+		}
+
+		rb_tree_node(value_type&& _Val, const std::shared_ptr<node_type> _P)
+			: _Value(std::move(_Val)), _Parent(_P), _Left(nullptr), _Right(nullptr), _Color(red)
+		{
+		}
+
+		static bool Is_nil(const std::shared_ptr<node_type>& p)
+		{
+			return (p == _Nil);
+		}
+
+		value_type& value(void)
+		{
+			return this->_Value;
+		}
+
+		std::weak_ptr<node_type>& parent(void)
+		{
+			return this->_Parent;
+		}
+
+		std::shared_ptr<node_type>& left(void)
+		{
+			return this->_Left;
+		}
+		
+		std::shared_ptr<node_type>& right(void)
+		{
+			return this->_Right;
 		}
 
 		node_color& color()
 		{
 			return this->_Color;
 		}
+
+		static std::shared_ptr<node_type> maximum(std::shared_ptr<node_type> x)
+		{
+			while (!Is_nil(x->right()))
+				x = x->right();
+			return x;
+		}
+
+		static std::shared_ptr<node_type> minimum(std::shared_ptr<node_type> x)
+		{
+			while (!Is_nil(x->left()))
+				x = x->left();
+			return x;
+		}
+
+		static std::weak_ptr<node_type> successor(std::shared_ptr<node_type> x)
+		{
+			
+		}
+
+		static std::weak_ptr<node_type> predecessor(std::shared_ptr<node_type> x)
+		{
+			
+		}
 	private:
+		value_type _Value;
+		std::weak_ptr<node_type> _Parent;
+		std::shared_ptr<node_type> _Left;
+		std::shared_ptr<node_type> _Right;
 		node_color _Color;
+		static std::shared_ptr<node_type> _Nil;
+	};
+
+template<typename _T>
+	std::shared_ptr<rb_tree_node<_T>> 
+		rb_tree_node<_T>::_Nil(std::make_shared<rb_tree_node<_T>>(black));
+
+// red black tree structure, P174, <<Introduction to Algorithms>>
+template<typename _T>
+	class rb_tree
+	{
+	public:
+		typedef typename tree_iterator<rb_tree_node<_T>>::value_type value_type;
+		typedef typename tree_iterator<rb_tree_node<_T>>::node_type node_type;
+		typedef typename tree_iterator<rb_tree_node<_T>>::iterator  iterator;
+		typedef size_t  size_type;
+	private:
+		std::shared_ptr<node_type> _Root;
+		size_type _Size;
 	};
 }
 #endif // !_TREE_H_
