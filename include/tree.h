@@ -469,32 +469,32 @@ template<typename _T>
 		};
 
 		rb_tree_node()
-			: _Value(), _Left(nullptr), _Right(nullptr), _Color(red)
+			: _Value(), _Parent(_Nil), _Left(_Nil), _Right(_Nil), _Color(red)
 		{
 		}
 
 		rb_tree_node(const value_type& _Val)
-			: _Value(_Val), _Left(nullptr), _Right(nullptr), _Color(red)
+			: _Value(_Val), _Parent(_Nil), _Left(_Nil), _Right(_Nil), _Color(red)
 		{
 		}
 
 		rb_tree_node(value_type&& _Val)
-			: _Value(std::move(_Val)), _Left(nullptr), _Right(nullptr), _Color(red)
+			: _Value(std::move(_Val)), _Parent(_Nil), _Left(_Nil), _Right(_Nil), _Color(red)
 		{
 		}
 
 		rb_tree_node(const node_color& _C)
-			: _Value(), _Left(nullptr), _Right(nullptr), _Color(_C)
+			: _Value(), _Parent(_Nil), _Left(_Nil), _Right(_Nil), _Color(_C)
 		{
 		}
 
 		rb_tree_node(const value_type& _Val, const std::shared_ptr<node_type> _P)
-			: _Value(_Val), _Parent(_P), _Left(nullptr), _Right(nullptr), _Color(red)
+			: _Value(_Val), _Parent(_P), _Left(_Nil), _Right(_Nil), _Color(red)
 		{
 		}
 
 		rb_tree_node(value_type&& _Val, const std::shared_ptr<node_type> _P)
-			: _Value(std::move(_Val)), _Parent(_P), _Left(nullptr), _Right(nullptr), _Color(red)
+			: _Value(std::move(_Val)), _Parent(_P), _Left(_Nil), _Right(_Nil), _Color(red)
 		{
 		}
 
@@ -573,6 +573,75 @@ template<typename _T>
 		typedef typename tree_iterator<rb_tree_node<_T>>::node_type node_type;
 		typedef typename tree_iterator<rb_tree_node<_T>>::iterator  iterator;
 		typedef size_t  size_type;
+
+		rb_tree()
+			: _Root(nullptr), _Size(0)
+		{
+		}
+
+		rb_tree(const value_type& _Val)
+			: _Root(std::make_shared<node_type>(_Val)), _Size(1)
+		{
+		}
+
+		iterator insert(const value_type& _Val)
+		{
+			auto x(std::make_shared<node_type>(_Val));
+			return insert(x);
+		}
+
+		iterator insert(value_type&& _Val)
+		{
+			auto x(std::make_shared<node_type>(std::move(_Val)));
+			return insert(x);
+		}
+
+		iterator insert(std::shared_ptr<node_type>& _New)
+		{
+			++_Size;
+			return iterator(_New);
+		}
+
+		std::shared_ptr<node_type>& root(void)
+		{
+			return this->_Root;
+		}
+
+		void left_rotate(std::shared_ptr<node_type>& x)
+		{
+			std::shared_ptr<node_type> y = x->right();
+			x->right() = y->left();
+			y->parent() = x->parent();
+			if (!node_type::Is_nil(y->left()))
+				y->left()->parent() = x;
+			y->left() = x;
+			std::shared_ptr<node_type> p = x->parent().lock();
+			if (node_type::Is_nil(p))
+				root() = y;
+			else if (p->left() == x)
+				p->left() = y;
+			else
+				p->right() = y;
+			x->parent() = y;
+		}
+
+		void right_rotate(std::shared_ptr<node_type>& x)
+		{
+			std::shared_ptr<node_type> y = x->left();
+			x->left() = y->right();
+			y->parent() = x->parent();
+			if (!node_type::Is_nil(y->right()))
+				y->right()->parent() = x;
+			y->right() = x;
+			std::shared_ptr<node_type> p = x->parent().lock();
+			if (node_type::Is_nil(p))
+				root() = y;
+			else if (p->left() == x)
+				p->left() = y;
+			else
+				p->right() = y;
+			x->parent = y;
+		}
 	private:
 		std::shared_ptr<node_type> _Root;
 		size_type _Size;

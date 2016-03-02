@@ -37,8 +37,7 @@ int main()
 	++it;
 	a.erase(it, a.end());
 
-	std::shared_ptr<rb_tree_node<int>> m(std::make_shared<rb_tree_node<int>>());
-	m->Is_nil(m);
+	rb_tree<int> r(10);
 	return 0;
 }
 
