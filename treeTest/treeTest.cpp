@@ -27,7 +27,7 @@ int main()
 	for (int i = 100; i > 0; --i)
 		x.push_back(u(e));
 	bs_tree<int> a(x.begin(), x.end());
-	a.inorder_walk(f1);
+	inorder_walk(a.root(), f1);
 //	auto it = a.end();
 //	--it;
 //	--it;

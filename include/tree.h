@@ -246,77 +246,6 @@ template<typename _T>
 				insert(*it);
 		}
 
-		typedef void(*walk_func)(const value_type&);
-
-		static void preorder_walk(std::shared_ptr<node_type> x, walk_func f)
-		{
-			if (x) {
-				f(x->value());
-				preorder_walk(x->left(), f);
-				preorder_walk(x->right(), f);
-			}
-		}
-
-		void preorder_walk(walk_func f)
-		{
-			preorder_walk(this->root(), f);
-		}
-
-		static void inorder_walk(std::shared_ptr<node_type> x, walk_func f)
-		{
-			if (x) {
-				inorder_walk(x->left(), f);
-				f(x->value());
-				inorder_walk(x->right(), f);
-			}
-		}
-
-		void inorder_walk(walk_func f)
-		{
-			inorder_walk(this->root(), f);
-		}
-
-		static void postorder_walk(std::shared_ptr<node_type> x, walk_func f)
-		{
-			if (x) {
-				postorder_walk(x->left(), f);
-				postorder_walk(x->right(), f);
-				f(x->value());
-			}
-		}
-
-		void postorder_walk(walk_func f)
-		{
-			postorder_walk(this->root(), f);
-		}
-
-		iterator search(std::shared_ptr<node_type> x, const value_type& _Val)
-		{
-			if (!x || x->value() == _Val)
-				return iterator(x);
-			else if (x->value < _Val)
-				return search(x->left(), _Val);
-			else
-				return search(x->right(), _Val);
-		}
-
-		iterator search(const value_type& _Val)
-		{
-			return search(this->root(), _Val);
-		}
-
-		iterator search_i(const value_type& _Val)
-		{
-			std::shared_ptr<node_type> x(this->root());
-			while (x && x->value() != _Val) {
-				if (x->value() < _Val)
-					x = x->left();
-				else
-					x = x->right();
-			}
-			return iterator(x);
-		}
-
 		iterator insert(const value_type& _Val)
 		{
 			auto x(std::make_shared<node_type>(_Val));
@@ -454,6 +383,69 @@ template<typename _T>
 		std::shared_ptr<node_type> _Head;
 		size_type _Size;
 	};
+
+template<typename _Node,
+	typename _Value = _Node::value_type,
+	typename _FPtr=void (*)(const _Value&)>
+	void preorder_walk(std::shared_ptr<_Node> x, _FPtr f)
+	{
+		if (x) {
+			f(x->value());
+			preorder_walk(x->left(), f);
+			preorder_walk(x->right(), f);
+		}
+	}
+
+template<typename _Node,
+	typename _Value = _Node::value_type,
+	typename _FPtr = void(*)(const _Value&)>
+	void inorder_walk(std::shared_ptr<_Node> x, _FPtr f)
+	{
+		if (x) {
+			inorder_walk(x->left(), f);
+			f(x->value());
+			inorder_walk(x->right(), f);
+		}
+	}
+
+template<typename _Node,
+	typename _Value = _Node::value_type,
+	typename _FPtr = void(*)(const _Value&)>
+	void postorder_walk(std::shared_ptr<_Node> x, _FPtr f)
+	{
+		if (x) {
+			postorder_walk(x->left(), f);
+			postorder_walk(x->right(), f);
+			f(x->value());
+		}
+	}
+
+template<typename _Node,
+	typename _Value = _Node::value_type,
+	typename _It = tree_iterator<_Node>>
+	_It search(std::shared_ptr<_Node> x, const _Value& _Val)
+	{
+		if (!x || x->value() == _Val)
+			return _It(x);
+		else if (x->value() < _Val)
+			return search(x->left(), _Val);
+		else
+			return search(x->right(), _Val);
+	}
+
+template<typename _Node,
+	typename _Value = _Node::value_type,
+	typename _It = tree_iterator<_Node >>
+	_It search_i(std::shared_ptr<_Node> x, const _Value& _Val)
+	{
+		while (x && x->value() != _Val) {
+			if (x->value() < _Val)
+				x = x->left();
+			else
+				x = x->right();
+		}
+		return _It(x);
+	}
 
 // red black tree node
 template<typename _T>
@@ -594,6 +586,22 @@ template<typename _T>
 		{
 		}
 
+		template<typename _TIt,
+			typename = std::enable_if<std::_Is_iterator<_TIt>::value>::type>
+		rb_tree(_TIt beg, _TIt end)
+			: _Root(node_type::nil()), _Size(0)
+		{
+			for (; beg != end; ++beg)
+				insert(*beg);
+		}
+
+		rb_tree(std::initializer_list<value_type> list)
+			: _Root(node_type::nil()), _Size(0)
+		{
+			for (auto it = list.begin(); it != list.end(); ++it)
+				insert(*it);
+		}
+
 		iterator insert(const value_type& _Val)
 		{
 			auto x(std::make_shared<node_type>(_Val));
@@ -632,16 +640,47 @@ template<typename _T>
 		void insert_fixup(std::shared_ptr<node_type> z)
 		{
 			for (std::shared_ptr<node_type> p = z->parent().lock();
-				p->color() == red; 
-				p = z->parent.lock()) {
+					p->color() == red; 
+					p = z->parent.lock()) {
 				std::shared_ptr<node_type> pp = p->parent.lock();
 				if (p == pp->left()) {
-
+					if (pp->right()->color() == red) {
+						pp->color() = red;
+						p->color() = black;
+						pp->right()->color() = black;
+						z = pp;
+					}
+					else {
+						if (z = p->right()) {
+							left_rotate(p);
+							z->color() = black;
+						}
+						else
+							p->color() = black;
+						pp->color() = red;
+						right_rotate(pp);
+					}
 				}
 				else {
-
+					if (pp->left()->color() == red) {
+						pp->color() = red;
+						p->color() = black;
+						pp->left()->color() = black;
+						z = pp;
+					}
+					else {
+						if (z = p->left()) {
+							right_rotate(p);
+							z->color() = black;
+						}
+						else
+							p->color() = black;
+						pp->color() = red;
+						left_rotate(pp);
+					}
 				}
 			}
+			root()->color() = black;
 		}
 
 		void left_rotate(std::shared_ptr<node_type>& x)
