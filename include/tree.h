@@ -569,6 +569,7 @@ template<typename _T>
 		typedef typename tree_iterator<rb_tree_node<_T>>::value_type value_type;
 		typedef typename tree_iterator<rb_tree_node<_T>>::node_type node_type;
 		typedef typename tree_iterator<rb_tree_node<_T>>::iterator  iterator;
+		typedef typename rb_tree_node<_T>::node_color node_color;
 		typedef size_t  size_type;
 
 		rb_tree()
@@ -717,6 +718,54 @@ template<typename _T>
 			else
 				p->right() = y;
 			x->parent = y;
+		}
+
+		iterator erase(iterator it)
+		{
+			std::shared_ptr<node_type> z = it.get_ptr().lock();
+			std::shared_ptr<node_type> x;
+			node_color _color = z->color();
+			if (Is_nil(z->left())) {
+				x = z->right();
+				transplant(z, x);
+			}
+			else if (Is_nil(z->right())) {
+				x = z->left();
+				transplant(z, x);
+			}
+			else {
+				std::shared_ptr<node_type> y = node_type::minimum(z->right());
+				_color = y->color();
+				x = y->right();
+				if (y != z->right()) {
+					transplant(y, y->right());
+					y->right() = z->right();
+					y->right()->parent() = y;
+				}
+				transplant(z, y);
+				y->left() = z->left();
+				y->left()->parent() = y;
+				y->color() = z->color();
+			}
+			if (_color == black)
+				erase_fixup(x);
+		}
+
+		void erase_fixup(std::shared_ptr<node_type> z)
+		{
+
+		}
+
+		void transplant(std::shared_ptr<node_type>& u, std::shared_ptr<node_type>& v)
+		{
+			std::shared_ptr<node_type> p = u->parent().lock();
+			if (node_type::Is_nil(p))
+				this->root() = v;
+			else if (u = p->left())
+				p->left() = v;
+			else
+				p->right() = v;
+			v->parent() = p;
 		}
 
 		std::shared_ptr<node_type>& root(void)
