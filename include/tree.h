@@ -587,7 +587,7 @@ template<typename _T>
 		}
 
 		template<typename _TIt,
-			typename = std::enable_if<std::_Is_iterator<_TIt>::value>::type>
+			typename = std::enable_if<std::_Is_iterator<_TIt>::value, void>::type>
 		rb_tree(_TIt beg, _TIt end)
 			: _Root(node_type::nil()), _Size(0)
 		{

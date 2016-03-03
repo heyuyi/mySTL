@@ -2,7 +2,7 @@
 #ifndef _ALGORITHM_H_
 #define _ALGORITHM_H_
 
-//#include <functional>
+#include <type_traits>
 
 namespace mySTL {
 // some kinds of sort algorithm
@@ -438,8 +438,8 @@ template<typename _TIt> inline
 // T(n) = O(nlgn)
 template<typename _TIt>
 	auto find_max_subarray(_TIt beg, _TIt end)
-//		-> typename std::remove_reference<decltype(*beg)>::type
-		-> decltype(*beg + 0)
+		-> typename std::remove_reference<decltype(*beg)>::type
+//		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
 		auto d = end - beg;
@@ -459,8 +459,8 @@ template<typename _TIt>
 
 template<typename _TIt>
 	auto find_max_cross_subarray(_TIt beg, _TIt mid, _TIt end)
-//		-> typename std::remove_reference<decltype(*beg)>::type
-		-> decltype(*beg + 0)
+		-> typename std::remove_reference<decltype(*beg)>::type
+//		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
 		auto left_sum = *(mid - 1);
@@ -484,8 +484,8 @@ template<typename _TIt>
 // My solution, T(n) = O(n)
 template<typename _TIt>
 	auto find_max_subarray_m(_TIt beg, _TIt end)
-//		-> typename std::remove_reference<decltype(*beg)>::type
-		-> decltype(*beg + 0)
+		-> typename std::remove_reference<decltype(*beg)>::type
+//		-> decltype(*beg + 0)
 //		-> typename _TIt::value_type
 	{
 		auto d = end - beg;
@@ -512,8 +512,8 @@ template<typename _TIt>
 template<typename _TIt,
 	typename _FPtr> inline
 	auto select(_TIt beg, _TIt end, int i, _FPtr func)
-//		-> typename std::remove_reference<decltype(*beg)>::type
-		->decltype(*beg)
+		-> typename std::remove_reference<decltype(*beg)>::type
+//		->decltype(*beg)
 	{
 		if ((end - beg) == 1)
 			return *beg;
@@ -529,8 +529,8 @@ template<typename _TIt,
 
 template<typename _TIt> inline
 	auto select(_TIt beg, _TIt end, int i)
-//		-> typename std::remove_reference<decltype(*beg)>::type
-		->decltype(*beg)
+		-> typename std::remove_reference<decltype(*beg)>::type
+//		->decltype(*beg)
 	{
 		return select(beg, end, i, std::less<decltype(*beg)>());
 	}
