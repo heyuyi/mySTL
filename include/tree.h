@@ -447,6 +447,12 @@ template<typename _Node,
 		return _It(x);
 	}
 
+	enum node_color
+	{
+		red,
+		black
+	};
+
 // red black tree node
 template<typename _T>
 	class rb_tree_node
@@ -454,11 +460,6 @@ template<typename _T>
 	public:
 		typedef typename _T value_type;
 		typedef typename rb_tree_node<_T> node_type;
-
-		enum node_color {
-			red,
-			black
-		};
 
 		rb_tree_node()
 			: _Value(), _Parent(_Nil), _Left(_Nil), _Right(_Nil), _Color(red)
@@ -566,10 +567,9 @@ template<typename _T>
 	class rb_tree
 	{
 	public:
-		typedef typename tree_iterator<rb_tree_node<_T>>::value_type value_type;
-		typedef typename tree_iterator<rb_tree_node<_T>>::node_type node_type;
+		typedef typename rb_tree_node<_T>::value_type value_type;
+		typedef typename rb_tree_node<_T>::node_type node_type;
 		typedef typename tree_iterator<rb_tree_node<_T>>::iterator  iterator;
-		typedef typename rb_tree_node<_T>::node_color node_color;
 		typedef size_t  size_type;
 
 		rb_tree()
@@ -601,6 +601,26 @@ template<typename _T>
 		{
 			for (auto it = list.begin(); it != list.end(); ++it)
 				insert(*it);
+		}
+
+		static int black_height(std::shared_ptr<node_type> x)
+		{
+			if (node_type::Is_nil(x))
+				return 0;
+			else {
+				int a = black_height(x->left());
+				int b = black_height(x->right());
+				if (a == -1 || b == -1 || a != b)
+					return -1;
+				if (x->color() == red) {
+					if (x->left()->color() == black&&x->right()->color() == black)
+						return a;
+					else
+						return -1;
+				}
+				else
+					return a + 1;
+			}
 		}
 
 		iterator insert(const value_type& _Val)
@@ -642,8 +662,8 @@ template<typename _T>
 		{
 			for (std::shared_ptr<node_type> p = z->parent().lock();
 					p->color() == red; 
-					p = z->parent.lock()) {
-				std::shared_ptr<node_type> pp = p->parent.lock();
+					p = z->parent().lock()) {
+				std::shared_ptr<node_type> pp = p->parent().lock();
 				if (p == pp->left()) {
 					if (pp->right()->color() == red) {
 						pp->color() = red;
@@ -652,9 +672,10 @@ template<typename _T>
 						z = pp;
 					}
 					else {
-						if (z = p->right()) {
+						if (z == p->right()) {
 							left_rotate(p);
 							z->color() = black;
+							z = p;
 						}
 						else
 							p->color() = black;
@@ -670,9 +691,10 @@ template<typename _T>
 						z = pp;
 					}
 					else {
-						if (z = p->left()) {
+						if (z == p->left()) {
 							right_rotate(p);
 							z->color() = black;
+							z = p;
 						}
 						else
 							p->color() = black;
@@ -717,7 +739,7 @@ template<typename _T>
 				p->left() = y;
 			else
 				p->right() = y;
-			x->parent = y;
+			x->parent() = y;
 		}
 
 		iterator erase(iterator it)
@@ -738,7 +760,7 @@ template<typename _T>
 				_color = y->color();
 				x = y->right();
 				if (y != z->right()) {
-					transplant(y, y->right());
+					transplant(y, x);
 					y->right() = z->right();
 					y->right()->parent() = y;
 				}
@@ -751,9 +773,64 @@ template<typename _T>
 				erase_fixup(x);
 		}
 
-		void erase_fixup(std::shared_ptr<node_type> z)
+		void erase_fixup(std::shared_ptr<node_type> x)
 		{
-
+			while (x != root() && x->color() == black) {
+				std::shared_ptr<node_type> p = x->parent().lock();
+				if (x == p->left()) {
+					std::shared_ptr<node_type> w = p->right();
+					if (w->color() == red) {
+						w->color() = black;
+						p->color() = red;
+						left_rotate(p);
+						w = p->right();
+					}
+					if (w->left()->color() == black && w->right()->color() == black) {
+						w->color() = red;
+						x = p;
+					}
+					else {
+						if (w->right()->color() == black) {
+							w->left()->color() = black;
+							w->color() = red;
+							right_rotate(w);
+							w = p->right();
+						}
+						w->color() = red;
+						p->color() = black;
+						w->right()->color() = black;
+						left_rotate(p);
+						break;
+					}
+				}
+				else {
+					std::shared_ptr<node_type> w = p->left();
+					if (w->color() == red) {
+						w->color() = black;
+						p->color() = red;
+						right_rotate(p);
+						w = p->left();
+					}
+					if (w->left()->color() == black && w->right()->color() == black) {
+						w->color() = red;
+						x = p;
+					}
+					else {
+						if (w->left()->color() == black) {
+							w->right()->color() = black;
+							w->color() = red;
+							left_rotate(w);
+							w = p->left();
+						}
+						w->color() = red;
+						p->color() = black;
+						w->left()->color() = black;
+						right_rotate(p);
+						break;
+					}
+				}
+			}
+			x->color() = black;
 		}
 
 		void transplant(std::shared_ptr<node_type>& u, std::shared_ptr<node_type>& v)
@@ -761,11 +838,12 @@ template<typename _T>
 			std::shared_ptr<node_type> p = u->parent().lock();
 			if (node_type::Is_nil(p))
 				this->root() = v;
-			else if (u = p->left())
+			else if (u == p->left())
 				p->left() = v;
 			else
 				p->right() = v;
-			v->parent() = p;
+			if (!node_type::Is_nil(v))
+				v->parent() = p;
 		}
 
 		std::shared_ptr<node_type>& root(void)
