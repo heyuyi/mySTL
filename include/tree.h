@@ -38,6 +38,11 @@ template<typename _T>
 		{
 		}
 
+		static bool Is_nil(const std::shared_ptr<node_type>& p)
+		{
+			return (p.get() == nullptr);
+		}
+
 		value_type& value(void)
 		{
 			return this->_Value;
@@ -129,7 +134,6 @@ template<typename _Node>
 		typedef typename tree_iterator<_Node>  iterator;
 
 		tree_iterator()
-			: _Node(nullptr)
 		{
 		}
 
@@ -389,7 +393,7 @@ template<typename _Node,
 	typename _FPtr=void (*)(const _Value&)>
 	void preorder_walk(std::shared_ptr<_Node> x, _FPtr f)
 	{
-		if (x) {
+		if (!_Node::Is_nil(x)) {
 			f(x->value());
 			preorder_walk(x->left(), f);
 			preorder_walk(x->right(), f);
@@ -401,7 +405,7 @@ template<typename _Node,
 	typename _FPtr = void(*)(const _Value&)>
 	void inorder_walk(std::shared_ptr<_Node> x, _FPtr f)
 	{
-		if (x) {
+		if (!_Node::Is_nil(x)) {
 			inorder_walk(x->left(), f);
 			f(x->value());
 			inorder_walk(x->right(), f);
@@ -413,7 +417,7 @@ template<typename _Node,
 	typename _FPtr = void(*)(const _Value&)>
 	void postorder_walk(std::shared_ptr<_Node> x, _FPtr f)
 	{
-		if (x) {
+		if (!_Node::Is_nil(x)) {
 			postorder_walk(x->left(), f);
 			postorder_walk(x->right(), f);
 			f(x->value());
@@ -425,9 +429,9 @@ template<typename _Node,
 	typename _It = tree_iterator<_Node>>
 	_It search(std::shared_ptr<_Node> x, const _Value& _Val)
 	{
-		if (!x || x->value() == _Val)
+		if (_Node::Is_nil(x) || x->value() == _Val)
 			return _It(x);
-		else if (x->value() < _Val)
+		else if (_Val < x->value())
 			return search(x->left(), _Val);
 		else
 			return search(x->right(), _Val);
@@ -438,8 +442,8 @@ template<typename _Node,
 	typename _It = tree_iterator<_Node >>
 	_It search_i(std::shared_ptr<_Node> x, const _Value& _Val)
 	{
-		while (x && x->value() != _Val) {
-			if (x->value() < _Val)
+		while (!_Node::Is_nil(x) && x->value() != _Val) {
+			if (_Val < x->value())
 				x = x->left();
 			else
 				x = x->right();
@@ -542,12 +546,34 @@ template<typename _T>
 
 		static std::weak_ptr<node_type> successor(std::shared_ptr<node_type> x)
 		{
-			
+			if (Is_nil(x))
+				return x;
+			else if (!Is_nil(x->right()))
+				return minimum(x->right());
+			else {
+				std::shared_ptr<node_type> y = x->parent().lock();
+				while (!Is_nil(y) && y->left() != x) {
+					x = y;
+					y = y->parent().lock();
+				}
+				return y;
+			}
 		}
 
 		static std::weak_ptr<node_type> predecessor(std::shared_ptr<node_type> x)
 		{
-			
+			if (Is_nil(x))
+				return x;
+			else if (!Is_nil(x->left()))
+				return maximum(x->left());
+			else {
+				std::shared_ptr<node_type> y = x->parent().lock();
+				while (!Is_nil(y) && y->left() == x) {
+					x = y;
+					y = y->parent().lock();
+				}
+				return y;
+			}
 		}
 	private:
 		value_type _Value;
@@ -745,18 +771,19 @@ template<typename _T>
 		iterator erase(iterator it)
 		{
 			std::shared_ptr<node_type> z = it.get_ptr().lock();
+			++it;
 			std::shared_ptr<node_type> x;
 			node_color _color = z->color();
-			if (Is_nil(z->left())) {
+			if (node_type::Is_nil(z->left())) {
 				x = z->right();
 				transplant(z, x);
 			}
-			else if (Is_nil(z->right())) {
+			else if (node_type::Is_nil(z->right())) {
 				x = z->left();
 				transplant(z, x);
 			}
 			else {
-				std::shared_ptr<node_type> y = node_type::minimum(z->right());
+				std::shared_ptr<node_type> y = it.get_ptr().lock();
 				_color = y->color();
 				x = y->right();
 				if (y != z->right()) {
@@ -771,6 +798,8 @@ template<typename _T>
 			}
 			if (_color == black)
 				erase_fixup(x);
+			--_Size;
+			return iterator(it);
 		}
 
 		void erase_fixup(std::shared_ptr<node_type> x)
@@ -833,6 +862,20 @@ template<typename _T>
 			x->color() = black;
 		}
 
+		iterator erase(iterator first, iterator last)
+		{
+			if (first == begin() && last == end()) {
+				clear();
+				return iterator(end());
+			}
+			else {
+				iterator it = first;
+				while (it != last)
+					it = erase(it);
+				return iterator(last);
+			}
+		}
+
 		void transplant(std::shared_ptr<node_type>& u, std::shared_ptr<node_type>& v)
 		{
 			std::shared_ptr<node_type> p = u->parent().lock();
@@ -844,6 +887,22 @@ template<typename _T>
 				p->right() = v;
 			if (!node_type::Is_nil(v))
 				v->parent() = p;
+		}
+
+		void clear(void)
+		{
+			_Root = node_type::nil();
+			_Size = 0;
+		}
+
+		iterator begin(void)
+		{
+			return iterator(node_type::minimum(root()));
+		}
+
+		iterator end(void)
+		{
+			return iterator(node_type::nil());
 		}
 
 		std::shared_ptr<node_type>& root(void)

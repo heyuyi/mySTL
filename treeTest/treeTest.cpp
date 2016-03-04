@@ -21,10 +21,10 @@ void f1(const int& x)
 
 int main()
 {
-	std::default_random_engine e(0);
-	std::uniform_int_distribution<> u(1, 10000);
+	std::default_random_engine e(time(0));
+	std::uniform_int_distribution<> u(1, 1000);
 	std::vector<int> x;
-	for (int i = 1000; i > 0; --i)
+	for (int i = 100; i > 0; --i)
 		x.push_back(u(e));
 	bs_tree<int> a(x.begin(), x.end());
 	inorder_walk(a.root(), f1);
@@ -39,6 +39,9 @@ int main()
 
 	rb_tree<int> rb(x.begin(), x.end());
 	int h = rb.black_height(rb.root());
+	auto i = search(rb.root(), x[0]);
+	auto j = rb.erase(i);
+	h = rb.black_height(rb.root());
 	return 0;
 }
 
