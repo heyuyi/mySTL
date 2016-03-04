@@ -21,7 +21,7 @@ void f1(const int& x)
 
 int main()
 {
-	std::default_random_engine e(time(0));
+	std::default_random_engine e(8);
 	std::uniform_int_distribution<> u(1, 1000);
 	std::vector<int> x;
 	for (int i = 100; i > 0; --i)

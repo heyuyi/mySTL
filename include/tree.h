@@ -885,7 +885,9 @@ template<typename _T>
 				p->left() = v;
 			else
 				p->right() = v;
-			if (!node_type::Is_nil(v))
+			// Next line my be modify nil's parent node, and it is useful.
+			// It can help us find y's parent node after erase(iterator it).
+//			if (!node_type::Is_nil(v))
 				v->parent() = p;
 		}
 
