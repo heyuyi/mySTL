@@ -3,8 +3,6 @@
 
 #include "stdafx.h"
 #include "..\include\heap.h"
-#include <vector>
-#include <functional>
 #include <queue>
 #include <ctime>
 #include <random>

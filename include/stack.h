@@ -2,6 +2,8 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
+#include <vector>
+
 namespace mySTL {
 // stack structure, P129, <<Introduction to Algorithms>>
 template<typename _T,

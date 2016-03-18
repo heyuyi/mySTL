@@ -4,8 +4,6 @@
 #include "stdafx.h"
 #include "..\include\stack.h"
 #include "..\include\queue.h"
-#include <vector>
-#include <deque>
 #include <iostream>
 
 //using namespace std;

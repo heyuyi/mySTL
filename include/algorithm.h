@@ -31,10 +31,11 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void bubble_sort(_TIt beg, _TIt end, _FPtr func)
 	{
+		using std::swap;
 		for (_TIt it1 = beg; it1 != end; ++it1) {
 			for (_TIt it2 = end - 1; it2 != it1; --it2) {
 				if (func(*it2, *(it2 - 1)))
-					std::swap(*it2, *(it2 - 1));
+					swap(*it2, *(it2 - 1));
 			}
 		}
 	}
@@ -137,8 +138,9 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void _Sort_heap(_TIt beg, _Diff n, _FPtr func)
 	{
+		using std::swap;
 		for (_Diff i = n - 1; i > 0; --i) {
-			std::swap(*beg, *(beg + i));
+			swap(*beg, *(beg + i));
 			_Adjust_heap(beg, i, static_cast <_Diff>(0), func);
 		}
 	}
@@ -181,16 +183,17 @@ template<typename _TIt,
 	typename _FPtr> inline
 	typename _TIt _Partition_0(_TIt beg, _TIt end, _FPtr func)
 	{
+		using std::swap;
 		auto val = *beg;
 		_TIt i = beg + 1, j = beg;
 		for (; i != end; ++i) {
 			if (func(*i, val)) {
 				++j;
-				std::swap(*j, *i);
+				swap(*j, *i);
 			}
 		}
 		if (j != beg)
-			std::swap(*beg, *j);
+			swap(*beg, *j);
 		return j;
 	}
 
@@ -198,6 +201,7 @@ template<typename _TIt,
 	typename _FPtr> inline
 	typename _TIt _Partition_1(_TIt beg, _TIt end, _FPtr func)
 	{
+		using std::swap;
 		auto val = *beg;
 		_TIt i = beg, j = end;
 		for (;;) {
@@ -208,11 +212,11 @@ template<typename _TIt,
 				--j;
 			} while (j >= beg && func(val, *j));
 			if (i < j)
-				std::swap(*i, *j);
+				swap(*i, *j);
 			else
 				break;
 		}
-		std::swap(*beg, *j);
+		swap(*beg, *j);
 		return j;
 	}
 
@@ -220,6 +224,7 @@ template<typename _TIt,
 	typename _FPtr> inline
 	typename _TIt _Partition_2(_TIt beg, _TIt end, _FPtr func)
 	{
+		using std::swap;
 		auto len = end - beg;
 		if (len > 7) {
 			_TIt l = beg;
@@ -232,7 +237,7 @@ template<typename _TIt,
 				n = mid3(n - 2 * d, n - d, n, func);
 			}
 			_TIt it = mid3(l, m, n, func);
-			std::swap(*beg, *it);
+			swap(*beg, *it);
 		}
 
 		auto val = *beg;
@@ -245,11 +250,11 @@ template<typename _TIt,
 				--j;
 			} while (j >= beg && func(val, *j));
 			if (i < j)
-				std::swap(*i, *j);
+				swap(*i, *j);
 			else
 				break;
 		}
-		std::swap(*beg, *j);
+		swap(*beg, *j);
 		return j;
 	}
 
@@ -279,12 +284,13 @@ template<typename _TIt,
 	typename _FPtr> inline
 	void _Mid3_m(_TIt _First, _TIt _Mid, _TIt _Last, _FPtr func)
 	{
+		using std::swap;
 		if (func(*_Mid, *_First))
-			std::swap(*_First, *_Mid);
+			swap(*_First, *_Mid);
 		if (func(*_Last, *_Mid)) {
-			std::swap(*_Mid, *_Last);
+			swap(*_Mid, *_Last);
 			if (func(*_Mid, *_First))
-				std::swap(*_First, *_Mid);
+				swap(*_First, *_Mid);
 		}			
 	}
 
@@ -292,6 +298,7 @@ template<typename _TIt,
 	typename _FPtr> inline
 	auto _Partition_3(_TIt beg, _TIt end, _FPtr func)
 	{
+		using std::swap;
 		auto len = end - beg;
 		_TIt _Mid = beg + len / 2;
 		_TIt _End = end - 1;
@@ -323,7 +330,7 @@ template<typename _TIt,
 					break;
 				else {
 					if (_Sback != _Mend)
-						std::swap(*_Mend, *_Sback);
+						swap(*_Mend, *_Sback);
 					++_Mend;
 				}
 			}
@@ -334,7 +341,7 @@ template<typename _TIt,
 					break;
 				else {
 					if (_Sfront != _Mbeg--)
-						std::swap(*_Mbeg, *(_Sfront - 1));
+						swap(*_Mbeg, *(_Sfront - 1));
 				}
 			}
 			if (_Sfront == beg) {
@@ -342,19 +349,19 @@ template<typename _TIt,
 					return std::pair<_TIt, _TIt>(_Mbeg, _Mend);
 				else {
 					if (_Mend != _Sback)
-						std::swap(*_Mend, *_Sback);
-					std::swap(*(_Mbeg++), *(_Mend++));
+						swap(*_Mend, *_Sback);
+					swap(*(_Mbeg++), *(_Mend++));
 					++_Sback;						
 				}
 			}
 			else if (_Sback == end) {
 				if (_Mbeg != _Sfront)
-					std::swap(*(_Mbeg - 1), *(_Sfront - 1));
-				std::swap(*(--_Mbeg), *(--_Mend));
+					swap(*(_Mbeg - 1), *(_Sfront - 1));
+				swap(*(--_Mbeg), *(--_Mend));
 				--_Sfront;
 			}
 			else
-				std::swap(*(--_Sfront), *(_Sback++));
+				swap(*(--_Sfront), *(_Sback++));
 		}
 	}
 

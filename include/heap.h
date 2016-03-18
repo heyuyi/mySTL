@@ -2,6 +2,7 @@
 #ifndef _HEAP_H_
 #define _HEAP_H_
 
+#include <vector>
 #include "algorithm.h"
 
 namespace mySTL {
@@ -120,6 +121,7 @@ template<typename _T,
 
 		void pop(void)
 		{
+			using std::swap;
 			if (!container.empty()) {
 				swap(container.front(), container.back());
 				_Adjust_heap(container.begin(), container.end() - container.begin() - 1,

@@ -2,6 +2,8 @@
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
+#include <deque>
+
 namespace mySTL {
 // queue structure, P129, <<Introduction to Algorithms>>
 template<typename _T,
