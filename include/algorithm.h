@@ -70,8 +70,7 @@ template<typename _TIt,
 		if (i == n1) {
 			for (; j < n2; ++it)
 				*it = _Rp[j++];
-		}
-		else {
+		} else {
 			for (; i < n1; ++it)
 				*it = _Lp[i++];
 		}
@@ -112,15 +111,13 @@ template<typename _TIt,
 			if (func(val, *(beg + child))) {
 				*(beg + i) = *(beg + child);
 				i = child;
-			}
-			else
+			} else
 				break;
 		}
 		if (child == n && func(val, *(beg + child - 1))) {
 			*(beg + i) = *(beg + child - 1);
 			*(beg + child - 1) = val;
-		}
-		else
+		} else
 			*(beg + i) = val;
 	}
 
@@ -171,8 +168,7 @@ template<typename _TIt,
 			if (func(*(beg + j), val)) {
 				*(beg + i) = *(beg + j);
 				i = j;
-			}
-			else
+			} else
 				break;
 		}
 		*(beg + i) = val;
@@ -309,8 +305,7 @@ template<typename _TIt,
 				_Mid3_m(_Mid - d, _Mid, _Mid + d, func);
 				_Mid3_m(_End - 2 * d, _End - d, _End, func);
 				_Mid3_m(beg + d, _Mid, _End - d, func);
-			}
-			else {
+			} else {
 				_Mid3_m(beg, _Mid, _End, func);
 			}
 		}
@@ -409,8 +404,7 @@ template<typename _TIt,
 			if ((_Mid.first - beg) < (end - _Mid.second)) {
 				quick_sort(beg, _Mid.first, func);
 				beg = _Mid.second;
-			}
-			else {
+			} else {
 				quick_sort(_Mid.second, end, func);
 				end = _Mid.first;
 			}
@@ -423,8 +417,7 @@ template<typename _TIt,
 			if ((_Mid.first - beg) < (end - _Mid.second)) {
 				quick_sort(beg, _Mid.first, func);
 				beg = _Mid.second;
-			}
-			else {
+			} else {
 				quick_sort(_Mid.second, end, func);
 				end = _Mid.first;
 			}
@@ -504,8 +497,7 @@ template<typename _TIt>
 			for (_TIt it = beg + 1; it != end; ++it) {
 				if (sum > 0) {
 					sum += *it;					
-				}
-				else {
+				} else {
 					sum = *it;
 				}
 				if (sum > max)
